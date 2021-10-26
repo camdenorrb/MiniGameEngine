@@ -1,0 +1,10 @@
+name: JavaPluginTemplate
+version: "1.0.0"
+author: "MrKitty_Cat"
+api-version: 1.17
+main: dev.twelveoclock.plugintemplate.TemplatePlugin
+
+commands:
+  meow:
+    usage: "/meow"
+    description: "Spawns a cute catto with the name configured!"
