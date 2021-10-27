@@ -1,4 +1,4 @@
-package dev.twelveoclock.plugintemplate.module;
+package dev.twelveoclock.minigameengine.module;
 
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;

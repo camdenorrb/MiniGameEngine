@@ -1,8 +1,8 @@
-name: JavaPluginTemplate
+name: MiniGameEngine
 version: "1.0.0"
 author: "MrKitty_Cat"
 api-version: 1.17
-main: dev.twelveoclock.plugintemplate.TemplatePlugin
+main: dev.twelveoclock.minigameengine.MiniGameEnginePlugin
 
 commands:
   meow:

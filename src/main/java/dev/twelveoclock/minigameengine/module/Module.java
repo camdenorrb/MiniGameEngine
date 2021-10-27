@@ -1,4 +1,4 @@
-package dev.twelveoclock.plugintemplate.module;
+package dev.twelveoclock.minigameengine.module;
 
 /**
  * The base for something that can be enabled or disabled

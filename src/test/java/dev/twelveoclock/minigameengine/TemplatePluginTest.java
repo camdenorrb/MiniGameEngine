@@ -1,4 +1,4 @@
-package dev.twelveoclock.plugintemplate;
+package dev.twelveoclock.minigameengine;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
@@ -12,13 +12,13 @@ final class TemplatePluginTest {
 
     private static ServerMock server;
 
-    private static TemplatePlugin plugin;
+    private static MiniGameEnginePlugin plugin;
 
 
     @BeforeAll
     static void setUp() {
         server = MockBukkit.mock();
-        plugin = MockBukkit.load(TemplatePlugin.class);
+        plugin = MockBukkit.load(MiniGameEnginePlugin.class);
     }
 
 

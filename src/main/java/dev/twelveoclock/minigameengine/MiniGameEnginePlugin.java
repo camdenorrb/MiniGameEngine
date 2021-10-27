@@ -1,9 +1,8 @@
-package dev.twelveoclock.plugintemplate;
+package dev.twelveoclock.minigameengine;
 
-import com.moandjiezana.toml.Toml;
-import dev.twelveoclock.plugintemplate.config.PluginConfig;
-import dev.twelveoclock.plugintemplate.module.impl.CatModule;
-import dev.twelveoclock.plugintemplate.module.impl.PlayerModule;
+import com.fasterxml.jackson.dataformat.toml.TomlMapper;
+import dev.twelveoclock.minigameengine.config.PluginConfig;
+import dev.twelveoclock.minigameengine.minigame.modules.MiniGamesModule;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
@@ -14,34 +13,24 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/**
- * A template plugin that incorporates the basics for every plugin I make
- *
- * Features:
- *  - Modules
- *  - Basic utilities
- *  - Latest Java features
- *  - Toml based config loading
- */
-public final class TemplatePlugin extends JavaPlugin {
-
-    private CatModule catModule;
+public final class MiniGameEnginePlugin extends JavaPlugin {
 
     private PluginConfig pluginConfig;
 
-    private final PlayerModule playerModule = new PlayerModule(this);
+    private MiniGamesModule miniGamesModule;
+
 
     /**
      * Constructor for MockBukkit
      */
-    public TemplatePlugin() {
+    public MiniGameEnginePlugin() {
         super();
     }
 
     /**
      * Constructor for MockBukkit
      */
-    public TemplatePlugin(final JavaPluginLoader loader, final PluginDescriptionFile description, final File dataFolder, final File file) {
+    public MiniGameEnginePlugin(final JavaPluginLoader loader, final PluginDescriptionFile description, final File dataFolder, final File file) {
         super(loader, description, dataFolder, file);
     }
 
@@ -49,19 +38,17 @@ public final class TemplatePlugin extends JavaPlugin {
     @Override
     public void onLoad() {
         loadConfig();
-        catModule = new CatModule(this, pluginConfig);
+        miniGamesModule = new MiniGamesModule(this, pluginConfig);
     }
 
     @Override
     public void onEnable() {
-        catModule.enable();
-        playerModule.enable();
+        miniGamesModule.enable();
     }
 
     @Override
     public void onDisable() {
-        catModule.disable();
-        playerModule.disable();
+        miniGamesModule.disable();
     }
 
 
@@ -74,9 +61,9 @@ public final class TemplatePlugin extends JavaPlugin {
 
         // Create the default config if no file exists
         if (Files.notExists(configPath)) {
-            try (final InputStream configStream = getClass().getResource("/config.toml").openStream()) {
+            try (final InputStream inputStream = getClass().getResource("/config.toml").openStream()) {
                 Files.createDirectories(configPath.getParent());
-                Files.copy(configStream, configPath);
+                Files.copy(inputStream, configPath);
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -84,8 +71,8 @@ public final class TemplatePlugin extends JavaPlugin {
         }
 
         // Read config
-        try {
-            pluginConfig = PluginConfig.from(new Toml().read(Files.newInputStream(configPath)));
+        try (final InputStream inputStream = Files.newInputStream(configPath)) {
+            pluginConfig = new TomlMapper().readValue(inputStream, PluginConfig.class);
         }
         catch (IOException e) {
             e.printStackTrace();

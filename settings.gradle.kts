@@ -1,2 +1,2 @@
-rootProject.name = "JavaGradlePluginTemplate"
+rootProject.name = "MiniGameEngine"
 
