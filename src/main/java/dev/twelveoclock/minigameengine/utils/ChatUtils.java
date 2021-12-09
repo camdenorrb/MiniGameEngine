@@ -15,6 +15,7 @@ public final class ChatUtils {
 
     /**
      * Attempt to convert Minecraft color codes in a string to their UTF representation
+     *
      * @param input The text you want to colorize
      * @return The colorized text
      */

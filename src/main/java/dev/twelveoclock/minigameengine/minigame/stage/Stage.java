@@ -12,5 +12,7 @@ public abstract class Stage {
     // Set by the loader
     private Map<String, List<Location>> markers;
 
+
+
 }
 

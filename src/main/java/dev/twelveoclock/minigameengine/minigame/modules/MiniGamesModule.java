@@ -28,22 +28,20 @@ public final class MiniGamesModule extends PluginModule {
 
     @Override
     protected void onEnable() {
-        // TODO: Load all minigames
-        // TODO: Start the minigame specified by the config
+        // TODO: Load all MiniGames
+        // TODO: Start the MiniGame specified by the config
     }
 
     @Override
     protected void onDisable() {
-        // TODO: Disable all minigames
-        // TODO: Unload all minigames
+        // TODO: Disable all MiniGames
+        // TODO: Unload all MiniGames
     }
 
 
     @EventHandler
     private void onJoin(final PlayerJoinEvent event) {
-
-        // TODO: Make the player join the minigame specified by the config
-
+        // TODO: Make the player join the MiniGame specified by the config
     }
 
 

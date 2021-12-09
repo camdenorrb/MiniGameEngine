@@ -22,11 +22,13 @@ repositories {
 dependencies {
 
     compileOnly("org.spigotmc:spigot-api:1.17.1-R0.1-SNAPSHOT")
+
+    /*
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:1.17-317")
 
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:1.17-317") {
         isTransitive = false
-    }
+    }*/
 
     implementation("org.jetbrains:annotations:22.0.0")
 
@@ -35,7 +37,7 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.13.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
-    testImplementation("com.github.seeseemelk:MockBukkit-v1.17:1.10.1")
+    testImplementation("com.github.seeseemelk:MockBukkit-v1.17:1.10.3")
 }
 
 
