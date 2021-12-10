@@ -6,9 +6,6 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public final class BukkitScoreboard {
 
 	private final Scoreboard scoreboard;
@@ -29,6 +26,7 @@ public final class BukkitScoreboard {
 			displayName
 		);
 	}
+
 
 	public Team createOrUpdateTeam(final String name, final String prefix, final String suffix) {
 
@@ -51,7 +49,7 @@ public final class BukkitScoreboard {
 
 		private final String displayName;
 
-		private final List<String> lines = new ArrayList<>(ChatColor.values().length);
+		private final String[] lines = new String[ChatColor.values().length];
 
 
 		public SideBar(final Objective objective, final String displayName) {
@@ -67,11 +65,13 @@ public final class BukkitScoreboard {
 			final String prefix = text.length() > 16 ? text.substring(0, 16) : text;
 			final String suffix = text.length() > 16 ? ChatColor.getLastColors(prefix) + text.substring(16) : "";
 
-			lines.set(index, text);
+			lines[index] = text;
 
 			createOrUpdateTeam(teamName, prefix, suffix);
 		}
 
+
+		//region Getters
 
 		public String getDisplayName() {
 			return displayName;
@@ -81,9 +81,11 @@ public final class BukkitScoreboard {
 			return objective;
 		}
 
-		public String getLine(final int index) {
-			return lines.get(index);
+		public String[] getLines() {
+			return lines;
 		}
+
+		//endregion
 
 	}
 

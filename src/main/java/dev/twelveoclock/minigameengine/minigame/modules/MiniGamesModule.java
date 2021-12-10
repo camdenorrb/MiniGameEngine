@@ -1,8 +1,8 @@
 package dev.twelveoclock.minigameengine.minigame.modules;
 
 import dev.twelveoclock.minigameengine.config.PluginConfig;
-import dev.twelveoclock.minigameengine.module.PluginModule;
 import dev.twelveoclock.minigameengine.minigame.plugin.MiniGamePlugin;
+import dev.twelveoclock.minigameengine.module.PluginModule;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;

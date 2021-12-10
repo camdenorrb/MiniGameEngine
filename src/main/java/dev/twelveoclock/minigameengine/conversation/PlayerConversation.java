@@ -1,5 +1,7 @@
 package dev.twelveoclock.minigameengine.conversation;
 
+import dev.twelveoclock.minigameengine.MiniGameEnginePlugin;
+import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.StringPrompt;
@@ -7,13 +9,15 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public final class PlayerConversation {
 
     private final Player player;
 
-    private final List<>
+    private final Map<String, CompletableFuture<String>> prompts = new HashMap<>();
 
 
     public PlayerConversation(final Player player) {
@@ -21,27 +25,31 @@ public final class PlayerConversation {
     }
 
 
-    public void thing() {
+    public CompletableFuture<String> request(final String prompt) {
 
-        new CompletableFuture<String>();
+        final CompletableFuture<String> responseFuture = new CompletableFuture<>();
 
-        new StringPrompt(){
+        player.beginConversation(new Conversation(MiniGameEnginePlugin.getPlugin(MiniGameEnginePlugin.class), pla))
+
+        new StringPrompt() {
 
             @NotNull
             @Override
-            public String getPromptText(@NotNull ConversationContext context) {
-                context.getAllSessionData();
-                return null;
+            public String getPromptText(@NotNull final ConversationContext context) {
+                return prompt;
             }
 
             @Nullable
             @Override
-            public Prompt acceptInput(@NotNull ConversationContext context, @Nullable String input) {
+            public Prompt acceptInput(@NotNull final ConversationContext context, @Nullable final String input) {
+                responseFuture.complete(input);
                 return null;
             }
 
-        }
+        };
 
+
+        return responseFuture;
     }
 
 

@@ -41,7 +41,7 @@ public abstract class MiniGamePlugin {
      * @param name The name of the MiniGame
      * @param version The version of the MiniGame
      */
-    public static final record Data(
+    public record Data(
         String name,
         String version
     ) {}

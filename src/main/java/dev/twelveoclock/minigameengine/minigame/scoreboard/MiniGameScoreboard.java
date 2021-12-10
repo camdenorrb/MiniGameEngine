@@ -2,15 +2,11 @@ package dev.twelveoclock.minigameengine.minigame.scoreboard;
 
 import dev.twelveoclock.minigameengine.minigame.MiniGame;
 import dev.twelveoclock.minigameengine.module.PluginModule;
-import dev.twelveoclock.minigameengine.utils.ChatUtils;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scoreboard.Team;
 
-import javax.annotation.Nullable;
-import java.util.List;
-import java.util.function.Function;
+import static org.bukkit.ChatColor.BOLD;
+import static org.bukkit.ChatColor.GOLD;
+
 
 // TODO: Account for Current MiniGame state, Teams
 public class MiniGameScoreboard extends PluginModule {
@@ -21,74 +17,52 @@ public class MiniGameScoreboard extends PluginModule {
 
 	private final BukkitScoreboard.SideBar sideBar;
 
-	@Nullable private final Integer updateDelay;
+	private final long updateTickRate;
 
 
 	public MiniGameScoreboard(
 		final MiniGame miniGame,
 		final JavaPlugin plugin,
-		@Nullable final Integer updateDelay
+		final Integer updateTickRate
 	) {
 
 		super(plugin);
 
 		this.miniGame = miniGame;
-		this.updateDelay = updateDelay;
+		this.updateTickRate = updateTickRate;
 		this.scoreboard = new BukkitScoreboard(plugin);
 
 		this.sideBar = scoreboard.createSideBar(
 			"MiniGames",
-			ChatUtils.colorize("&6&lMiniGames")
+			GOLD + "" + BOLD + "MiniGames"
 		);
 	}
 
 
-	public List<String> createScoreboardContent() {
-		return List.of(
-			miniGame.getName(),
-			miniGame.getStage(),
-		);
-	}
-
-	public Team createTeam(final String name, final String prefix, final String suffix) {
-
-
-		final Team team = scoreboard.registerNewTeam(name);
-
-		team.setPrefix(prefix);
-		team.setSuffix(suffix);
-
-		return team;
+	private void updateScoreboardContent() {
+		sideBar.setLine(0, miniGame.getName());
+		sideBar.setLine(1, miniGame.getStage().getName());
 	}
 
 
+	//region Getters
 
-
-	/*
-	public static class Entry {
-
-		private final String text;
-
-		private final int delay;
-
-
-		public Entry(final String text, final int delay) {
-			this.text = text;
-			this.delay = delay;
-		}
-
-
-		public int getDelay() {
-			return delay;
-		}
-
-		public String getText() {
-			return text;
-		}
-
+	public MiniGame getMiniGame() {
+		return miniGame;
 	}
-	*/
 
+	public BukkitScoreboard getScoreboard() {
+		return scoreboard;
+	}
 
+	public BukkitScoreboard.SideBar getSideBar() {
+		return sideBar;
+	}
+
+	public long getUpdateTickRate() {
+		return updateTickRate;
+	}
+
+	//endregion
 
 }
