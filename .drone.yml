@@ -4,11 +4,11 @@ name: default
 
 platform:
   os: linux
-  arch: arm64
+  arch: amd64
 
 steps:
 
 - name: test
-  image: gradle:jdk17
+  image: gradle:latest
   commands:
-  - gradle build
+  - gradle build --no-daemon
