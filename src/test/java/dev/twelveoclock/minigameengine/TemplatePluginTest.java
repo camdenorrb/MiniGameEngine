@@ -1,5 +1,6 @@
 package dev.twelveoclock.minigameengine;
 
+/*
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
@@ -21,7 +22,6 @@ final class TemplatePluginTest {
         plugin = MockBukkit.load(MiniGameEnginePlugin.class);
     }
 
-
     @Test
     void join() {
         final PlayerMock player = server.addPlayer();
@@ -37,3 +37,4 @@ final class TemplatePluginTest {
     }
 
 }
+*/

@@ -28,8 +28,7 @@ public final class PlayerConversation {
     public CompletableFuture<String> request(final String prompt) {
 
         final CompletableFuture<String> responseFuture = new CompletableFuture<>();
-
-        player.beginConversation(new Conversation(MiniGameEnginePlugin.getPlugin(MiniGameEnginePlugin.class), pla))
+        //player.beginConversation(new Conversation(MiniGameEnginePlugin.getPlugin(MiniGameEnginePlugin.class), player, ))
 
         new StringPrompt() {
 
