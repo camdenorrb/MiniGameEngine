@@ -1,18 +1,19 @@
-# Java Gradle Plugin Template
+# MiniGameEngine
+MiniGameEngine is a versatile and extensible Minecraft server plugin designed to provide a framework for hosting and managing a wide variety of minigames. Built with flexibility and customization in mind, MiniGameEngine aims to simplify the process of creating and managing Minecraft minigames.
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Build Status](https://drone.12oclock.dev/api/badges/camdenorrb/MiniGameEngine/status.svg)](https://drone.12oclock.dev/camdenorrb/MiniGameEngine)
+## Features
 
-### Features
-- [x] Modules
-- [x] Basic utilities
-- [x] Latest Java features
-- [x] Toml based config loading
-- [x] MockBukkit for testing
-- [x] Cat module :3
-- [x] Player module
+- **Plugin System**: Allows new minigames to be easily added as plugins.
+- **Standardized Structure**: Provides a common interface and structure for all minigames, simplifying development and management.
+- **Arena Management**: Offers efficient methods for loading, resetting, and managing arenas of different sizes and configurations.
+- **Configuration System**: Each minigame includes a configuration file, allowing server admins to customize game settings.
+- **Event Handling**: Robust system to manage a range of in-game events, such as player join/leave, win conditions, etc.
+- **User Interface**: Intuitive and efficient UI for player interaction, including game selection, rule display, and progress tracking.
 
-### Commands
-```
-/meow - Spawns a cat with the name specified in the config
-```
+## Usage
+
+// TODO
+
+## License
+
+MiniGameEngine is licensed under the [MIT license](https://github.com/camdenorrb/MiniGameEngine/blob/main/LICENSE).
