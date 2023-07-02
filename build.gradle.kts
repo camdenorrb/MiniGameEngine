@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
 
-    compileOnly("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT")
 
     /*
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:1.17-317")
