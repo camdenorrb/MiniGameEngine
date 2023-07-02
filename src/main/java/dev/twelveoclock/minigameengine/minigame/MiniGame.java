@@ -1,7 +1,7 @@
 package dev.twelveoclock.minigameengine.minigame;
 
 import dev.twelveoclock.minigameengine.minigame.data.Stats;
-import dev.twelveoclock.minigameengine.minigame.data.Team;
+import dev.twelveoclock.minigameengine.minigame.team.Team;
 import dev.twelveoclock.minigameengine.minigame.stage.Stage;
 import org.bukkit.entity.Player;
 
@@ -20,7 +20,6 @@ public abstract class MiniGame {
 
 
     // Set by the loader
-    
     protected Stage stage;
 
 

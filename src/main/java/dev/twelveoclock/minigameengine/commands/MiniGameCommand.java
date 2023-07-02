@@ -70,7 +70,7 @@ public final class MiniGameCommand implements CommandExecutor {
 		@NotNull final CommandSender sender
 	) {
 
-		final StringBuilder builder = new StringBuilder(ChatColor.GOLD + "" + ChatColor.BOLD + "MiniGames:");
+		final StringBuilder builder = new StringBuilder(ChatColor.GOLD + String.valueOf(ChatColor.BOLD) + "MiniGames:");
 
 		for (final MiniGamePlugin miniGamePlugin : miniGamesModule.getMiniGamePlugins()) {
 			builder.append("\n    +").append(miniGamePlugin.getData().name());

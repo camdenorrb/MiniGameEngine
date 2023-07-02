@@ -2,9 +2,7 @@ package dev.twelveoclock.minigameengine.minigame.scoreboard;
 
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
+import org.bukkit.scoreboard.*;
 
 public final class BukkitScoreboard {
 
@@ -17,10 +15,10 @@ public final class BukkitScoreboard {
 
 
 	public SideBar createSideBar(final String name, final String displayName) {
-		return createSideBar(name, "dummy", displayName);
+		return createSideBar(name, Criteria.DUMMY, displayName);
 	}
 
-	public SideBar createSideBar(final String name, final String criteria, final String displayName) {
+	public SideBar createSideBar(final String name, final Criteria criteria, final String displayName) {
 		return new SideBar(
 			scoreboard.registerNewObjective(name, criteria, displayName),
 			displayName

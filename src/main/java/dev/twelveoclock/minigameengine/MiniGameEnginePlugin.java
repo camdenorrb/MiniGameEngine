@@ -65,7 +65,7 @@ public final class MiniGameEnginePlugin extends JavaPlugin {
                 Files.createDirectories(configPath.getParent());
                 Files.copy(inputStream, configPath);
             }
-            catch (IOException ex) {
+            catch (final IOException ex) {
                 ex.printStackTrace();
             }
         }
@@ -74,7 +74,7 @@ public final class MiniGameEnginePlugin extends JavaPlugin {
         try (final InputStream inputStream = Files.newInputStream(configPath)) {
             pluginConfig = new TomlMapper().readValue(inputStream, PluginConfig.class);
         }
-        catch (IOException ex) {
+        catch (final IOException ex) {
             ex.printStackTrace();
         }
     }

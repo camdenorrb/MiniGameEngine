@@ -6,7 +6,7 @@ import org.bukkit.block.Block;
 /**
  * @param bitMask The bitMask used to create the position
  */
-public final record BlockPosition(Long bitMask) {
+public record BlockPosition(Long bitMask) {
 
     /**
      * @param x The x position

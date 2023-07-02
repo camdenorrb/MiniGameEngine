@@ -14,7 +14,7 @@ import java.util.Map;
  * @param markers The markers for the stage
  * @param partSchematics The path of the schematics that make up the stage
  */
-public final record StageData(
+public record StageData(
     String name,
     Map<Marker, List<BlockPosition>> markers,
     Map<String, Path> partSchematics

@@ -1,0 +1,15 @@
+
+Teams {
+    - Selection NPC locations will be defined in world files (GameWorldConfig class)
+    - Game will define what the NPC looks like
+    - Game will define what the team gives the player
+}
+
+Game {
+    - Each GameWorld will have a GameWorldConfig file in the world folder
+    -
+}
+
+Lobby {
+
+}
