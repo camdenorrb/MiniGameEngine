@@ -30,7 +30,7 @@ dependencies {
         isTransitive = false
     }*/
 
-    implementation("org.jetbrains:annotations:24.0.0")
+    implementation("org.jetbrains:annotations:24.0.1")
 
     // Jackson
     implementation("com.fasterxml.jackson.core:jackson-core:2.15.2")
