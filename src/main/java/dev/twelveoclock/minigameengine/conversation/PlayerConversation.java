@@ -1,7 +1,5 @@
 package dev.twelveoclock.minigameengine.conversation;
 
-import dev.twelveoclock.minigameengine.MiniGameEnginePlugin;
-import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.StringPrompt;
@@ -50,8 +48,4 @@ public final class PlayerConversation {
 
         return responseFuture;
     }
-
-
-
-
 }

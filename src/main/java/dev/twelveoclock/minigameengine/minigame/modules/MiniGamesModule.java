@@ -26,14 +26,16 @@ public final class MiniGamesModule extends PluginModule {
     }
 
 
+
     @Override
     protected void onEnable() {
-        // TODO: Load all MiniGames
+        loadAllMiniGames();
         // TODO: Start the MiniGame specified by the config
     }
 
     @Override
     protected void onDisable() {
+        miniGamePlugins.forEach(MiniGamePlugin::onDisable);
         // TODO: Disable all MiniGames
         // TODO: Unload all MiniGames
     }
@@ -51,6 +53,11 @@ public final class MiniGamesModule extends PluginModule {
 
     public List<MiniGamePlugin> getMiniGamePlugins() {
         return miniGamePlugins;
+    }
+
+
+    private void loadAllMiniGames() {
+
     }
 
 }

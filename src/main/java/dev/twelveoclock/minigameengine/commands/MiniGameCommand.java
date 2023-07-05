@@ -31,6 +31,7 @@ public final class MiniGameCommand implements CommandExecutor {
 			case "list"  -> list(sender);
 			case "stop"  -> stop(sender, command, label, args);
 			case "build" -> build(sender, command, label, args);
+			case "setmainspawn" -> setMainSpawn(sender, command, label, args);
 		}
 
 		return true;
@@ -70,7 +71,7 @@ public final class MiniGameCommand implements CommandExecutor {
 		@NotNull final CommandSender sender
 	) {
 
-		final StringBuilder builder = new StringBuilder(ChatColor.GOLD + String.valueOf(ChatColor.BOLD) + "MiniGames:");
+		final StringBuilder builder = new StringBuilder(ChatColor.GOLD + ChatColor.BOLD.toString() + "MiniGames:");
 
 		for (final MiniGamePlugin miniGamePlugin : miniGamesModule.getMiniGamePlugins()) {
 			builder.append("\n    +").append(miniGamePlugin.getData().name());
@@ -113,4 +114,20 @@ public final class MiniGameCommand implements CommandExecutor {
 
 	}
 
+	/**
+	 * A command to set the main spawn for a MiniGame
+	 *
+	 * @param sender
+	 * @param command
+	 * @param label
+	 * @param args
+	 */
+	private void setMainSpawn(
+			@NotNull final CommandSender sender,
+			@NotNull final Command command,
+			@NotNull final String label,
+			@NotNull final String[] args
+	) {
+
+	}
 }
