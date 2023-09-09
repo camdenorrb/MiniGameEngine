@@ -30,8 +30,11 @@ public final class MiniGameCommand implements CommandExecutor {
 			case "start" -> start(sender, command, label, args);
 			case "list"  -> list(sender);
 			case "stop"  -> stop(sender, command, label, args);
-			case "build" -> build(sender, command, label, args);
-			case "setmainspawn" -> setMainSpawn(sender, command, label, args);
+			case "setup" -> setup(sender, command, label, args);
+			case "config" -> config(sender, command, label, args); // TODO: GUI with options like auto start
+			case "setLobby" -> setLobby(sender, command, label, args); // TODO: Lobby where all players are teleported to, can be per game
+			case "delete" -> delete(sender, command, label, args); // TODO: Delete game
+			case "setInstances" -> setInstances(sender, command, label, args); // TODO: Set how many of each game
 		}
 
 		return true;
@@ -105,7 +108,7 @@ public final class MiniGameCommand implements CommandExecutor {
 	 * @param label
 	 * @param args
 	 */
-	private void build(
+	private void setup(
 		@NotNull final CommandSender sender,
 		@NotNull final Command command,
 		@NotNull final String label,
@@ -115,19 +118,19 @@ public final class MiniGameCommand implements CommandExecutor {
 	}
 
 	/**
-	 * A command to set the main spawn for a MiniGame
+	 * A command to see a menu for all the enabled/disabled minigames
 	 *
 	 * @param sender
 	 * @param command
 	 * @param label
 	 * @param args
 	 */
-	private void setMainSpawn(
+	private void minigames(
 			@NotNull final CommandSender sender,
 			@NotNull final Command command,
 			@NotNull final String label,
 			@NotNull final String[] args
 	) {
-
+		command
 	}
 }

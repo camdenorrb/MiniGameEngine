@@ -41,8 +41,6 @@ public final class MobTeamNPC<T extends LivingEntity> implements TeamNPC {
 	}
 
 
-
-
 	@Override
 	public void spawn(final Location location) {
 		location.getWorld().spawn(location, entityType, entity -> {

@@ -1,7 +1,7 @@
 package dev.twelveoclock.minigameengine;
 
 import com.fasterxml.jackson.dataformat.toml.TomlMapper;
-import dev.twelveoclock.minigameengine.config.PluginConfig;
+import dev.twelveoclock.minigameengine.config.MiniGamePluginConfig;
 import dev.twelveoclock.minigameengine.minigame.modules.MiniGamesModule;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,7 +15,7 @@ import java.nio.file.Path;
 
 public final class MiniGameEnginePlugin extends JavaPlugin {
 
-    private PluginConfig pluginConfig;
+    private MiniGamePluginConfig pluginConfig;
 
     private MiniGamesModule miniGamesModule;
 
@@ -72,7 +72,7 @@ public final class MiniGameEnginePlugin extends JavaPlugin {
 
         // Read config
         try (final InputStream inputStream = Files.newInputStream(configPath)) {
-            pluginConfig = new TomlMapper().readValue(inputStream, PluginConfig.class);
+            pluginConfig = new TomlMapper().readValue(inputStream, MiniGamePluginConfig.class);
         }
         catch (final IOException ex) {
             ex.printStackTrace();

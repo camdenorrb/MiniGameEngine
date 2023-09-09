@@ -1,6 +1,6 @@
 package dev.twelveoclock.minigameengine.minigame.modules;
 
-import dev.twelveoclock.minigameengine.config.PluginConfig;
+import dev.twelveoclock.minigameengine.config.MiniGamePluginConfig;
 import dev.twelveoclock.minigameengine.minigame.plugin.MiniGamePlugin;
 import dev.twelveoclock.minigameengine.module.PluginModule;
 import org.bukkit.event.EventHandler;
@@ -15,16 +15,15 @@ import java.util.List;
  */
 public final class MiniGamesModule extends PluginModule {
 
-    private final PluginConfig config;
+    private final MiniGamePluginConfig config;
 
     private final List<MiniGamePlugin> miniGamePlugins = new ArrayList<>();
 
 
-    public MiniGamesModule(final JavaPlugin plugin, final PluginConfig config) {
+    public MiniGamesModule(final JavaPlugin plugin, final MiniGamePluginConfig config) {
         super(plugin);
         this.config = config;
     }
-
 
 
     @Override
@@ -47,7 +46,7 @@ public final class MiniGamesModule extends PluginModule {
     }
 
 
-    public PluginConfig getConfig() {
+    public MiniGamePluginConfig getConfig() {
         return config;
     }
 
