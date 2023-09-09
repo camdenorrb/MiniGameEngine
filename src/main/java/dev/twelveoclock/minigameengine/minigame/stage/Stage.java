@@ -1,5 +1,6 @@
 package dev.twelveoclock.minigameengine.minigame.stage;
 
+import dev.twelveoclock.minigameengine.minigame.marker.Marker;
 import org.bukkit.Location;
 
 import java.util.List;
@@ -11,10 +12,10 @@ public abstract class Stage {
     private final String name;
 
     // Set by the loader
-    private final Map<String, List<Location>> markers;
+    private final Map<Marker, List<Location>> markers;
 
 
-    public Stage(final String name, final Map<String, List<Location>> markers) {
+    public Stage(final String name, final Map<Marker, List<Location>> markers) {
         this.name = name;
         this.markers = markers;
     }
@@ -24,7 +25,7 @@ public abstract class Stage {
         return name;
     }
 
-    public Map<String, List<Location>> getMarkers() {
+    public Map<Marker, List<Location>> getMarkers() {
         return markers;
     }
 

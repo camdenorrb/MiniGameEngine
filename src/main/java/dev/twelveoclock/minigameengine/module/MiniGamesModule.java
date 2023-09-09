@@ -8,6 +8,7 @@ public final class MiniGamesModule {
 
 	private final SelectionMode selectorMode;
 
+
 	public MiniGamesModule(final MiniGamePluginLoaderModule pluginLoaderModule, final SelectionMode selectorMode) {
 		this.pluginLoaderModule = pluginLoaderModule;
 		this.selectorMode = selectorMode;
@@ -31,7 +32,11 @@ public final class MiniGamesModule {
 		/**
 		 * The MiniGame is selected by vote
 		 */
-		VOTE
+		VOTE,
+		/**
+		 * The MiniGame is selected by the relative BungeeCord server
+		 */
+		BUNGEE,
 	}
 
 }
