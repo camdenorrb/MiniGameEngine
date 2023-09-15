@@ -1,32 +1,39 @@
 package dev.twelveoclock.minigameengine.minigame.stage;
 
-import dev.twelveoclock.minigameengine.minigame.marker.Marker;
-import org.bukkit.Location;
-
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Path;
 
 public abstract class Stage {
 
     // Set by the loader
-    private final String name;
+    protected String name;
 
     // Set by the loader
-    private final Map<Marker, List<Location>> markers;
+    protected StageData data;
 
+    // Set by the loader
+    protected Path dataFolder;
 
-    public Stage(final String name, final Map<Marker, List<Location>> markers) {
-        this.name = name;
-        this.markers = markers;
-    }
+    /**
+     * Called when the stage is started
+     */
+    protected abstract void start();
+
+    /**
+     * Called when the stage is stopped
+     */
+    protected abstract void stop();
 
 
     public String getName() {
         return name;
     }
 
-    public Map<Marker, List<Location>> getMarkers() {
-        return markers;
+    public StageData getData() {
+        return data;
+    }
+
+    public Path getDataFolder() {
+        return dataFolder;
     }
 
 }

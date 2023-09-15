@@ -1,10 +1,11 @@
 plugins {
-    java
+    `java-library`
+    `maven-publish`
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "dev.twelveoclock"
-version = "1.0.0"
+version = "1.0.3"
 
 repositories {
 
@@ -51,9 +52,26 @@ tasks {
         relocate("com.fasterxml", "dev.twelveoclock.plugintemplate.libs.com.fasterxml")
         relocate("org.jetbrains", "dev.twelveoclock.plugintemplate.libs.org.jetbrains")
         relocate("org.intellij", "dev.twelveoclock.plugintemplate.libs.org.intellij")
+        archiveFileName.set("MiniGameEngine.jar")
     }
 }
 
-tasks {
-
+publishing {
+    repositories {
+        maven {
+            name = "12oclockDev"
+            url = uri("https://maven.12oclock.dev/releases")
+            credentials(PasswordCredentials::class)
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
+        }
+    }
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "dev.twelveoclock"
+            artifactId = "minigame-engine"
+            from(components["java"])
+        }
+    }
 }

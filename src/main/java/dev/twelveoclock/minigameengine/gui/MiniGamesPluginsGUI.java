@@ -9,14 +9,14 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class MiniGamesPluginGUI extends PluginModule implements GUI {
+public final class MiniGamesPluginsGUI extends PluginModule implements GUI {
 
 	private final SlicedChest view;
 
 	private final MiniGamePluginLoaderModule miniGamesPluginModule;
 
 
-	public MiniGamesPluginGUI(final JavaPlugin plugin, final MiniGamePluginLoaderModule miniGamesPluginModule) {
+	public MiniGamesPluginsGUI(final JavaPlugin plugin, final MiniGamePluginLoaderModule miniGamesPluginModule) {
 		super(plugin);
 		this.view = new SlicedChest(plugin.getServer().createInventory(null, InventoryType.CHEST));
 		this.miniGamesPluginModule = miniGamesPluginModule;
@@ -38,10 +38,10 @@ public final class MiniGamesPluginGUI extends PluginModule implements GUI {
 
 		final var gameTypesView = new SlicedChest(view.getInventory(), 0, 0, 1, 1);
 
-		gameTypesView.fillWith(miniGamesPluginModule.getGameTypes().values(), gameType -> {
+		gameTypesView.fillWith(miniGamesPluginModule.getPlugins().values(), gamePlugin -> {
 			final var gameItem = new ItemStack(Material.CHEST);
 			final var meta = gameItem.getItemMeta();
-			meta.setDisplayName(gameType.getGameName());
+			meta.setDisplayName(gamePlugin.getConfig().name());
 			gameItem.setItemMeta(meta);
 			return gameItem;
 		});

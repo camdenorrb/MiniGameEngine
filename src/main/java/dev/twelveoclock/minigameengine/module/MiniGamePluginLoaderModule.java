@@ -1,12 +1,14 @@
 package dev.twelveoclock.minigameengine.module;
 
 import com.fasterxml.jackson.dataformat.toml.TomlMapper;
+import dev.twelveoclock.minigameengine.MiniGameEnginePlugin;
 import dev.twelveoclock.minigameengine.config.MiniGamePluginConfig;
 import dev.twelveoclock.minigameengine.minigame.plugin.MiniGamePlugin;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -23,20 +25,47 @@ public final class MiniGamePluginLoaderModule extends PluginModule {
 
 	private static final String CONFIG_FILE_NAME = "minigame.toml";
 
+	private final Field configField, engineField, dataFolderField;
 
-	// GameName -> GameClass
-	private final Map<String, Class<MiniGamePlugin>> gameTypes = new HashMap<>();
+	// GameName (LowerCase) -> GameClass
+	private final Map<String, MiniGamePlugin> gamePlugins = new HashMap<>();
 
 
-	public MiniGamePluginLoaderModule(final JavaPlugin plugin) {
+	public MiniGamePluginLoaderModule(final MiniGameEnginePlugin plugin) {
+
 		super(plugin);
+
+		try {
+
+			configField = MiniGamePlugin.class.getDeclaredField("config");
+			engineField = MiniGamePlugin.class.getDeclaredField("engine");
+			dataFolderField = MiniGamePlugin.class.getDeclaredField("dataFolder");
+
+			configField.setAccessible(true);
+			engineField.setAccessible(true);
+			dataFolderField.setAccessible(true);
+		}
+		catch (final NoSuchFieldException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 
 	@Override
 	protected void onEnable() {
 		try {
-			loadMiniGamesPlugins();
+
+			final Path mainFolder = plugin.getDataFolder().toPath();
+			final Path updateFolder = mainFolder.resolve(UPDATES_FOLDER_NAME);
+			final Path gamesFolder = mainFolder.resolve(GAMES_FOLDER_NAME);
+
+			Files.createDirectories(mainFolder);
+			Files.createDirectories(updateFolder);
+			Files.createDirectories(gamesFolder);
+
+			updatePlugins(gamesFolder, updateFolder);
+			loadPlugins(gamesFolder);
+			gamePlugins.values().forEach(MiniGamePlugin::enable); // TODO: Filter based on GUI data
 		}
 		catch (final IOException e) {
 			throw new RuntimeException("Failed to load MiniGames", e);
@@ -45,22 +74,27 @@ public final class MiniGamePluginLoaderModule extends PluginModule {
 
 	@Override
 	protected void onDisable() {
-		unloadMiniGameLoaders();
+		unloadLoaders();
 	}
 
 
-	private void loadMiniGamesPlugins() throws IOException {
+	private void loadPlugins(final Path gamesFolder) throws IOException {
+		// Load all jars from games folder using URLClassLoader
+		try (final var files = Files.list(gamesFolder)) {
+			files.filter(Files::isRegularFile)
+				.filter(it -> it.toString().toLowerCase().endsWith(".jar"))
+				.forEach(path -> {
+					try (final URLClassLoader gameClassLoader = new URLClassLoader(new URL[]{path.toUri().toURL()}, plugin.getClass().getClassLoader())) {
+						loadPlugin(gameClassLoader, gamesFolder);
+					}
+					catch (final RuntimeException | IOException e) {
+						throw new RuntimeException(e);
+					}
+				});
+		}
+	}
 
-		final Path mainFolder = plugin.getDataFolder().toPath();
-		Files.createDirectories(mainFolder);
-
-		final Path updateFolder = mainFolder.resolve(UPDATES_FOLDER_NAME);
-		Files.createDirectories(updateFolder);
-
-		final Path gamesFolder = mainFolder.resolve(GAMES_FOLDER_NAME);
-		Files.createDirectories(gamesFolder);
-
-		// Move all jars from the games folder to the update folder
+	private void updatePlugins(final Path gamesFolder, final Path updateFolder) throws IOException {
 		try (final var files = Files.list(updateFolder)) {
 			files.filter(Files::isRegularFile)
 				.filter(it -> it.toString().toLowerCase().endsWith(".jar"))
@@ -73,45 +107,57 @@ public final class MiniGamePluginLoaderModule extends PluginModule {
 					}
 				});
 		}
+	}
 
-		// Load all jars from games folder using URLClassLoader
-		try (final var files = Files.list(gamesFolder)) {
-			files.filter(Files::isRegularFile)
-				.filter(it -> it.toString().toLowerCase().endsWith(".jar"))
-				.forEach(path -> {
-					try (final URLClassLoader gameClassLoader = new URLClassLoader(new URL[]{path.toUri().toURL()}, plugin.getClass().getClassLoader())) {
+	private void loadPlugin(final URLClassLoader gameClassLoader, final Path gamesFolder) {
+		try {
 
-						final MiniGamePluginConfig miniGameConfig = loadMiniGamePluginConfig(gameClassLoader);
+			final MiniGamePluginConfig miniGameConfig = loadGameConfig(gameClassLoader);
 
-						@SuppressWarnings("unchecked")
-						final Class<MiniGamePlugin> gamePlugin = (Class<MiniGamePlugin>) gameClassLoader.loadClass(miniGameConfig.mainClassPath());
+			@SuppressWarnings("unchecked")
+			final Class<MiniGamePlugin> gamePluginClass = (Class<MiniGamePlugin>) gameClassLoader.loadClass(miniGameConfig.mainClassPath());
 
-						if (gameTypes.containsKey(miniGameConfig.name())) {
-							throw new RuntimeException("Duplicate game name: " + miniGameConfig.name());
-						}
+			if (gamePlugins.containsKey(miniGameConfig.name().toLowerCase())) {
+				throw new RuntimeException("Duplicate game name: " + miniGameConfig.name());
+			}
 
-						gameTypes.put(miniGameConfig.name(), gamePlugin);
-					}
-					catch (final IOException | ClassNotFoundException e) {
-						throw new RuntimeException(e);
-					}
-				});
+			final MiniGamePlugin gamePlugin = gamePluginClass.getConstructor().newInstance();
+			final Path gameFolder = gamesFolder.resolve(miniGameConfig.name());
+
+			Files.createDirectories(gameFolder);
+
+			configField.set(gamePlugin, miniGameConfig);
+			engineField.set(gamePlugin, plugin);
+			dataFolderField.set(gamePlugin, gameFolder);
+
+			gamePlugins.put(miniGameConfig.name().toLowerCase(), gamePlugin);
+
+			gamePlugin.load();
+		}
+		catch (final IOException | ClassNotFoundException | InvocationTargetException |
+		             InstantiationException | IllegalAccessException | NoSuchMethodException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
-	private void unloadMiniGameLoaders() {
-		gameTypes.clear();
+	private void loadStages() {
+
 	}
 
-	private MiniGamePluginConfig loadMiniGamePluginConfig(final URLClassLoader gameClassLoader) throws IOException {
+	private void unloadLoaders() {
+		gamePlugins.values().forEach(MiniGamePlugin::disable);
+		gamePlugins.clear();
+	}
+
+	private MiniGamePluginConfig loadGameConfig(final URLClassLoader gameClassLoader) throws IOException {
 		try (final InputStream inputStream = gameClassLoader.getResourceAsStream(CONFIG_FILE_NAME)) {
 			return new TomlMapper().readValue(inputStream, MiniGamePluginConfig.class);
 		}
 	}
 
 
-	public Map<String, Class<MiniGamePlugin>> getGameTypes() {
-		return gameTypes;
+	public Map<String, MiniGamePlugin> getPlugins() {
+		return gamePlugins;
 	}
 
 }

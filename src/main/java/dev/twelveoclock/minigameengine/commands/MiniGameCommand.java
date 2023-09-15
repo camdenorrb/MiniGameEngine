@@ -1,7 +1,8 @@
 package dev.twelveoclock.minigameengine.commands;
 
-import dev.twelveoclock.minigameengine.minigame.modules.MiniGamesModule;
 import dev.twelveoclock.minigameengine.minigame.plugin.MiniGamePlugin;
+import dev.twelveoclock.minigameengine.module.MiniGamesModule;
+import dev.twelveoclock.minigameengine.utils.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -26,15 +27,22 @@ public final class MiniGameCommand implements CommandExecutor {
 		@NotNull final String[] args
 	) {
 
+		if (args.length == 0) {
+			sendUsage(sender, args, "Please specify a subcommand.");
+			return true;
+		}
+
 		switch (args[0].toLowerCase()) {
 			case "start" -> start(sender, command, label, args);
-			case "list"  -> list(sender);
-			case "stop"  -> stop(sender, command, label, args);
-			case "setup" -> setup(sender, command, label, args);
-			case "config" -> config(sender, command, label, args); // TODO: GUI with options like auto start
-			case "setLobby" -> setLobby(sender, command, label, args); // TODO: Lobby where all players are teleported to, can be per game
-			case "delete" -> delete(sender, command, label, args); // TODO: Delete game
-			case "setInstances" -> setInstances(sender, command, label, args); // TODO: Set how many of each game
+			case "list"  -> list(sender, args); // TODO: Open GUI with all MiniGame plugins if arg 0 is "plugins" or "games"
+			case "stop"  -> stop(sender, command, label, args); // TODO: Ask to confirm
+			case "setup" -> setup(sender, command, label, args); // TODO: Walk through set up of a game stage
+			//case "config" -> config(sender, command, label, args); // TODO: GUI with options like auto start
+			//case "setLobby" -> setLobby(sender, command, label, args); // TODO: Lobby where all players are teleported to, can be per game
+			//case "delete" -> delete(sender, command, label, args); // TODO: Delete game
+			case "setinstances" -> setInstances(sender, command, label, args); // TODO: Set how many of each game
+			// TODO: Option to use GUI commands or Text only mode
+			default -> sendUsage(sender, args, "Unknown subcommand.");
 		}
 
 		return true;
@@ -56,6 +64,19 @@ public final class MiniGameCommand implements CommandExecutor {
 		@NotNull final String[] args
 	) {
 
+		if (args.length < 2) {
+			sendUsage(sender, args, "Please specify a MiniGame to start.");
+			return;
+		}
+
+		final MiniGamePlugin miniGamePlugin = miniGamesModule.getPluginLoaderModule().getPlugins().get(args[1].toLowerCase());
+
+		if (miniGamePlugin == null) {
+			sender.sendMessage(ChatColor.RED + "Unknown MiniGame: " + args[1]);
+			return;
+		}
+
+		//miniGamePlugin.start();
 	}
 
 	/**
@@ -71,16 +92,39 @@ public final class MiniGameCommand implements CommandExecutor {
 	 * @param sender The person who executed the command
 	 */
 	private void list(
-		@NotNull final CommandSender sender
+		@NotNull final CommandSender sender,
+		@NotNull final String[] args
 	) {
 
-		final StringBuilder builder = new StringBuilder(ChatColor.GOLD + ChatColor.BOLD.toString() + "MiniGames:");
-
-		for (final MiniGamePlugin miniGamePlugin : miniGamesModule.getMiniGamePlugins()) {
-			builder.append("\n    +").append(miniGamePlugin.getData().name());
+		if (args.length < 2) {
+			sendUsage(sender, args, "Please specify a list to view.");
+			return;
 		}
 
-		sender.sendMessage(builder.toString());
+		switch (args[1].toLowerCase()) {
+			case "plugins" -> {
+
+				final StringBuilder builder = new StringBuilder(ChatColor.GOLD + "" + ChatColor.BOLD + "MiniGame Plugins:");
+
+				for (final MiniGamePlugin miniGamePlugin : miniGamesModule.getPluginLoaderModule().getPlugins().values()) {
+					builder.append("\n    +").append(miniGamePlugin.getConfig().name());
+				}
+
+				sender.sendMessage(builder.toString());
+			}
+			case "games" -> {
+
+				final StringBuilder builder = new StringBuilder(ChatColor.GOLD + "" + ChatColor.BOLD + "MiniGames:");
+
+				// TODO: Include minigames with no instances
+				miniGamesModule.getMiniGames().forEach((s, miniGames) ->
+					builder.append("\n  ").append(StringUtils.titleCase(s)).append(": ").append(miniGames.size())
+				);
+
+				sender.sendMessage(builder.toString());
+			}
+			default -> sendUsage(sender, args, "Unknown list: " + args[1]);
+		}
 	}
 
 	/**
@@ -117,20 +161,76 @@ public final class MiniGameCommand implements CommandExecutor {
 
 	}
 
-	/**
-	 * A command to see a menu for all the enabled/disabled minigames
-	 *
-	 * @param sender
-	 * @param command
-	 * @param label
-	 * @param args
-	 */
-	private void minigames(
-			@NotNull final CommandSender sender,
-			@NotNull final Command command,
-			@NotNull final String label,
-			@NotNull final String[] args
+	private void sendUsage(
+		@NotNull final CommandSender sender,
+		@NotNull final String[] args,
+		@NotNull final String reason
 	) {
-		command
+
+		final StringBuilder builder = new StringBuilder(
+			"\n" + ChatColor.RED + reason + "\n" + ChatColor.GOLD + "Usage: " + ChatColor.GRAY + "/minigame"
+		);
+
+		switch (args.length) {
+
+			case 1:
+				switch (args[0].toLowerCase()) {
+					case "list":
+						builder.append(" list <plugins|games>");
+						break;
+					case "setinstances":
+						builder.append(" setInstances <amount> <plugin>");
+						break;
+				}
+				break;
+
+			case 2:
+				switch (args[0].toLowerCase()) {
+					case "setinstances":
+						builder.append(" setInstances ").append(args[1]).append(" <plugin>");
+						break;
+				}
+
+			default:
+				builder.append(" <start|list|stop|setup>");
+				break;
+		}
+
+		sender.sendMessage(builder.toString());
 	}
+
+	// TODO: A gui where you left click to increment and right click to decrement
+	// TODO: Disable command if in dynamic mode
+	private void setInstances(
+		@NotNull final CommandSender sender,
+		@NotNull final Command command,
+		@NotNull final String label,
+		@NotNull final String[] args
+	) {
+
+		if (args.length < 3) {
+			sendUsage(sender, args, "Please specify a MiniGame and amount.");
+			return;
+		}
+
+		miniGamesModule.setInstances(Integer.parseInt(args[1]), miniGamesModule.getPluginLoaderModule().getPlugins().get(args[2].toLowerCase()));
+
+	}
+
+//	/**
+//	 * A command to see a menu for all the enabled/disabled minigames
+//	 *
+//	 * @param sender
+//	 * @param command
+//	 * @param label
+//	 * @param args
+//	 */
+//	private void minigames(
+//			@NotNull final CommandSender sender,
+//			@NotNull final Command command,
+//			@NotNull final String label,
+//			@NotNull final String[] args
+//	) {
+//
+//	}
 }

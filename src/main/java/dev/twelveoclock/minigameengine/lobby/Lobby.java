@@ -11,7 +11,7 @@ public final class Lobby extends PluginModule {
 	private final int minPlayers, maxPlayers;
 
 
-	public Lobby(final JavaPlugin plugin, final MiniGame miniGame, final int minPlayers, final int maxPlayers) {
+	public Lobby(final JavaPlugin plugin, final MiniGame<?> miniGame, final int minPlayers, final int maxPlayers) {
 		super(plugin);
 		this.minPlayers = minPlayers;
 		this.maxPlayers = maxPlayers;

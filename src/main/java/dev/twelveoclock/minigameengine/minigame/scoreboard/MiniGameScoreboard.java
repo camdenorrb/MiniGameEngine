@@ -3,6 +3,7 @@ package dev.twelveoclock.minigameengine.minigame.scoreboard;
 import dev.twelveoclock.minigameengine.minigame.MiniGame;
 import dev.twelveoclock.minigameengine.module.PluginModule;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import static org.bukkit.ChatColor.BOLD;
 import static org.bukkit.ChatColor.GOLD;
@@ -11,7 +12,7 @@ import static org.bukkit.ChatColor.GOLD;
 // TODO: Account for Current MiniGame state, Teams
 public class MiniGameScoreboard extends PluginModule {
 
-	private final MiniGame miniGame;
+	private final MiniGame<?> miniGame;
 
 	private final BukkitScoreboard scoreboard;
 
@@ -21,9 +22,9 @@ public class MiniGameScoreboard extends PluginModule {
 
 
 	public MiniGameScoreboard(
-		final MiniGame miniGame,
-		final JavaPlugin plugin,
-		final Integer updateTickRate
+		@NotNull final MiniGame<?> miniGame,
+		@NotNull final JavaPlugin plugin,
+		@NotNull final Integer updateTickRate
 	) {
 
 		super(plugin);
@@ -40,14 +41,14 @@ public class MiniGameScoreboard extends PluginModule {
 
 
 	private void updateScoreboardContent() {
-		sideBar.setLine(0, miniGame.getName());
-		sideBar.setLine(1, miniGame.getStage().getName());
+		//sideBar.setLine(0, miniGame.getName());
+		//sideBar.setLine(1, miniGame.getStage().getName());
 	}
 
 
 	//region Getters
 
-	public MiniGame getMiniGame() {
+	public MiniGame<?> getMiniGame() {
 		return miniGame;
 	}
 

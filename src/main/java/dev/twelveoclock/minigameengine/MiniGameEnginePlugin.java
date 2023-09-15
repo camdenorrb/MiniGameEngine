@@ -1,9 +1,8 @@
 package dev.twelveoclock.minigameengine;
 
 import com.fasterxml.jackson.dataformat.toml.TomlMapper;
-import dev.twelveoclock.minigameengine.config.MiniGamePluginConfig;
 import dev.twelveoclock.minigameengine.config.PluginConfig;
-import dev.twelveoclock.minigameengine.minigame.modules.MiniGamesModule;
+import dev.twelveoclock.minigameengine.module.MiniGamesModule;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
@@ -39,7 +38,7 @@ public final class MiniGameEnginePlugin extends JavaPlugin {
     @Override
     public void onLoad() {
         loadConfig();
-        miniGamesModule = new MiniGamesModule(this, pluginConfig);
+        miniGamesModule = new MiniGamesModule(this, MiniGamesModule.SelectionMode.RANDOM); // TODO: Get selection mode from config
     }
 
     @Override
