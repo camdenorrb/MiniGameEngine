@@ -3,6 +3,7 @@ package dev.twelveoclock.minigameengine;
 import com.fasterxml.jackson.dataformat.toml.TomlMapper;
 import dev.twelveoclock.minigameengine.config.PluginConfig;
 import dev.twelveoclock.minigameengine.module.MiniGamesModule;
+import dev.twelveoclock.minigameengine.module.PlaceholderModule;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
@@ -18,6 +19,8 @@ public final class MiniGameEnginePlugin extends JavaPlugin {
     private PluginConfig pluginConfig;
 
     private MiniGamesModule miniGamesModule;
+
+    private final PlaceholderModule placeholderModule = new PlaceholderModule(this);
 
 
     /**
@@ -44,11 +47,13 @@ public final class MiniGameEnginePlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         miniGamesModule.enable();
+        placeholderModule.enable();
     }
 
     @Override
     public void onDisable() {
         miniGamesModule.disable();
+        placeholderModule.disable();
     }
 
 

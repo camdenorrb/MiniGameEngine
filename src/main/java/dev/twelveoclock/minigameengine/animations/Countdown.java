@@ -27,4 +27,10 @@ public final class Countdown {
 		this.seconds = seconds;
 	}
 
+
+	public interface Presenter {
+		void showRemainingTime(final Countdown countdown);
+
+	}
+
 }

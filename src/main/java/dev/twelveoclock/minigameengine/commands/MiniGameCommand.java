@@ -158,7 +158,8 @@ public final class MiniGameCommand implements CommandExecutor {
 		@NotNull final String label,
 		@NotNull final String[] args
 	) {
-
+		// Conversation with player defined by the minigame
+		// Save stage to file
 	}
 
 	private void sendUsage(

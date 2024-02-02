@@ -113,8 +113,6 @@ public final class MiniGamesModule extends PluginModule {
 		}
 	}
 
-	private
-
 
 	public MiniGamePluginLoaderModule getPluginLoaderModule() {
 		return pluginLoaderModule;
