@@ -214,7 +214,6 @@ public final class MiniGameCommand implements CommandExecutor {
 		}
 
 		miniGamesModule.setInstances(Integer.parseInt(args[1]), miniGamesModule.getPluginLoaderModule().getPlugins().get(args[2].toLowerCase()));
-
 	}
 
 //	/**
