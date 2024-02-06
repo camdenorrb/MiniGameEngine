@@ -25,7 +25,7 @@ public final class MiniGamePluginLoaderModule extends PluginModule {
 
 	private static final String CONFIG_FILE_NAME = "minigame.toml";
 
-	private final Field configField, engineField, dataFolderField;
+	private final Field configField, engineField, dataFolderField, javaPluginField;
 
 	// GameName (LowerCase) -> GameClass
 	private final Map<String, MiniGamePlugin> gamePlugins = new HashMap<>();
@@ -40,10 +40,12 @@ public final class MiniGamePluginLoaderModule extends PluginModule {
 			configField = MiniGamePlugin.class.getDeclaredField("config");
 			engineField = MiniGamePlugin.class.getDeclaredField("engine");
 			dataFolderField = MiniGamePlugin.class.getDeclaredField("dataFolder");
+			javaPluginField = MiniGamePlugin.class.getDeclaredField("javaPlugin");
 
 			configField.setAccessible(true);
 			engineField.setAccessible(true);
 			dataFolderField.setAccessible(true);
+			javaPluginField.setAccessible(true);
 		}
 		catch (final NoSuchFieldException e) {
 			throw new RuntimeException(e);
@@ -129,6 +131,7 @@ public final class MiniGamePluginLoaderModule extends PluginModule {
 			configField.set(gamePlugin, miniGameConfig);
 			engineField.set(gamePlugin, plugin);
 			dataFolderField.set(gamePlugin, gameFolder);
+			javaPluginField.set(gamePlugin, plugin);
 
 			gamePlugins.put(miniGameConfig.name().toLowerCase(), gamePlugin);
 
@@ -141,6 +144,8 @@ public final class MiniGamePluginLoaderModule extends PluginModule {
 	}
 
 	private void loadStages() {
+
+		// TODO: Make stage data relative per minigame
 
 	}
 

@@ -13,7 +13,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly("dev.twelveoclock:minigame-engine:1.0.9")
+    compileOnly("org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT")
+    compileOnly("dev.twelveoclock:minigame-engine:1.0.12")
 }
 
 tasks {

@@ -6,6 +6,7 @@ import dev.twelveoclock.minigameengine.position.BlockPosition;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Stores data about the Stage for loading purposes
@@ -16,6 +17,7 @@ import java.util.Map;
  */
 public record StageData(
     String name,
-    Map<Marker, List<BlockPosition>> markers,
-    Map<String, Path> partSchematics
+    UUID worldUUID,
+    Map<Marker, List<BlockPosition>> markers, // The loader to make this relative -> absolute
+    //Map<String, Path> partSchematics This can just be in a folder
 ) {}

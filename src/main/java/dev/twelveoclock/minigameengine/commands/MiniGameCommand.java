@@ -1,5 +1,6 @@
 package dev.twelveoclock.minigameengine.commands;
 
+import dev.twelveoclock.minigameengine.minigame.MiniGame;
 import dev.twelveoclock.minigameengine.minigame.plugin.MiniGamePlugin;
 import dev.twelveoclock.minigameengine.module.MiniGamesModule;
 import dev.twelveoclock.minigameengine.utils.StringUtils;
@@ -7,7 +8,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public final class MiniGameCommand implements CommandExecutor {
 
@@ -33,7 +37,9 @@ public final class MiniGameCommand implements CommandExecutor {
 		}
 
 		switch (args[0].toLowerCase()) {
-			case "start" -> start(sender, command, label, args);
+			//case "start" -> start(sender, command, label, args);
+			// TODO: Remove this in favor of other methods of joining such as signs, gui, npc, etc
+			case "join" -> join(sender, command, label, args);
 			case "list"  -> list(sender, args); // TODO: Open GUI with all MiniGame plugins if arg 0 is "plugins" or "games"
 			case "stop"  -> stop(sender, command, label, args); // TODO: Ask to confirm
 			case "setup" -> setup(sender, command, label, args); // TODO: Walk through set up of a game stage
@@ -48,6 +54,41 @@ public final class MiniGameCommand implements CommandExecutor {
 		return true;
 	}
 
+	/**
+	 * A command to join a MiniGame
+	 *
+	 * @param sender
+	 * @param command
+	 * @param label
+	 * @param args
+	 */
+	private void join(final CommandSender sender, final Command command, final String label, final String[] args) {
+
+		if (!(sender instanceof final Player player)) {
+			sender.sendMessage(ChatColor.RED + "Only players can join MiniGames.");
+			return;
+		}
+		if (args.length < 2) {
+			sendUsage(sender, args, "Please specify a MiniGame to join.");
+			return;
+		}
+
+		final List<MiniGame<?>> miniGames = miniGamesModule.getMiniGames().get(args[1].toLowerCase());
+		if (miniGames == null) {
+			sender.sendMessage(ChatColor.RED + "Unknown MiniGame: " + args[1]);
+			return;
+		}
+
+		final MiniGame<?> miniGame = miniGames.stream().filter(game -> game.getState() == MiniGame.State.WAITING_ON_PLAYERS).findFirst().orElse(null);
+		if (miniGame == null) {
+			sender.sendMessage(ChatColor.RED + "No available MiniGames for: " + args[1]);
+			return;
+		}
+
+
+		miniGame.playerJoin(player);
+	}
+
 
 	/**
 	 * A command to start a MiniGame
@@ -57,6 +98,7 @@ public final class MiniGameCommand implements CommandExecutor {
 	 * @param label
 	 * @param args
 	 */
+	/* TODO: Use join instead to automatically determine if a game should start
 	private void start(
 		@NotNull final CommandSender sender,
 		@NotNull final Command command,
@@ -76,8 +118,8 @@ public final class MiniGameCommand implements CommandExecutor {
 			return;
 		}
 
-		//miniGamePlugin.start();
-	}
+		miniGamePlugin.enable();
+	}*/
 
 	/**
 	 *	A command to list the MiniGames currently loaded
@@ -141,6 +183,7 @@ public final class MiniGameCommand implements CommandExecutor {
 		@NotNull final String label,
 		@NotNull final String[] args
 	) {
+
 
 	}
 

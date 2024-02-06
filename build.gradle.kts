@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "dev.twelveoclock"
-version = "1.0.9"
+version = "1.0.12"
 
 repositories {
 
@@ -22,7 +22,7 @@ repositories {
 
 dependencies {
 
-    compileOnly("org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT")
 
     /*
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:1.17-317")

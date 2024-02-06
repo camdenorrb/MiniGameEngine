@@ -59,4 +59,12 @@ public record BlockPosition(Long bitMask) {
         return (int) (bitMask << 26 >> 38);
     }
 
+    /**
+     * @param world The world to convert the BlockPosition to a Location in
+     * @return The Location representation of the BlockPosition
+     */
+    public Location toLocation(org.bukkit.World world) {
+        return new Location(world, getX(), getY(), getZ());
+    }
+
 }

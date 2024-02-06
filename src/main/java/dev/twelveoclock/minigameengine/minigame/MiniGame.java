@@ -2,6 +2,7 @@ package dev.twelveoclock.minigameengine.minigame;
 
 import dev.twelveoclock.minigameengine.minigame.data.Stats;
 import dev.twelveoclock.minigameengine.minigame.plugin.MiniGamePlugin;
+import dev.twelveoclock.minigameengine.minigame.stage.Stage;
 import dev.twelveoclock.minigameengine.minigame.team.Team;
 import org.bukkit.entity.Player;
 
@@ -22,19 +23,46 @@ public abstract class MiniGame<T extends MiniGamePlugin> {
 
     protected T plugin;
 
+    protected State state = State.WAITING_ON_PLAYERS;
+
+
     public MiniGame(final T plugin) {
         this.plugin = plugin;
+    }
+
+    protected abstract boolean onStart();
+
+    protected abstract boolean onStop();
+
+    protected abstract void onPlayerJoin(Player player);
+
+
+    public final void playerJoin(Player player) {
+        players.add(player);
+        onPlayerJoin(player);
+    }
+
+    public final void waitOnPlayers() {
+        state = State.WAITING_ON_PLAYERS;
     }
 
     /**
      * Called when the MiniGame is started
      */
-    protected abstract void start();
+    public final void start() {
+        if (onStart()) {
+            state = State.RUNNING;
+        }
+    }
 
     /**
      * Called when the MiniGame is stopped
      */
-    protected abstract void stop();
+    public final void stop() {
+        if (onStop()) {
+            state = State.STOPPED;
+        }
+    }
 
 
     /**
@@ -42,6 +70,11 @@ public abstract class MiniGame<T extends MiniGamePlugin> {
      */
     public Map<UUID, Stats> getStats() {
         return stats;
+    }
+
+
+    public State getState() {
+        return state;
     }
 
     /**
@@ -56,6 +89,18 @@ public abstract class MiniGame<T extends MiniGamePlugin> {
      */
     public T getPlugin() {
         return plugin;
+    }
+
+
+    public Stage loadStage(final String name) {
+        // Make stageData relative to location
+    }
+
+
+    public enum State {
+        WAITING_ON_PLAYERS,
+        RUNNING,
+        STOPPED,
     }
 
 }

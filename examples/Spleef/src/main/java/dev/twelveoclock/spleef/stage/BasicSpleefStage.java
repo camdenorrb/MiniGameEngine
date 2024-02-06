@@ -21,7 +21,6 @@ public class BasicSpleefStage extends Stage {
 
 		@Override
 		public BasicSpleefStage build(final PlayerConversation playerConversation) {
-			playerConversation.
 			return null;
 		}
 

@@ -5,6 +5,8 @@ import dev.twelveoclock.minigameengine.config.MiniGamePluginConfig;
 import dev.twelveoclock.minigameengine.minigame.MiniGame;
 import dev.twelveoclock.minigameengine.minigame.stage.Stage;
 import dev.twelveoclock.minigameengine.minigame.stage.StageBuilder;
+import org.bukkit.Location;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.nio.file.Path;
 import java.util.Map;
@@ -18,10 +20,14 @@ public abstract class MiniGamePlugin {
     protected MiniGameEnginePlugin engine;
 
     // Set by the loader
+    protected JavaPlugin javaPlugin;
+
+    // Set by the loader
     protected Path dataFolder;
 
     // Set by the loader
-    protected Stage[] stages;
+    //protected Stage[] stages;
+    // TODO: Instead we will build a list of stages from file names
 
     /**
      * Creates a MiniGame instance based on the plugin
@@ -61,6 +67,28 @@ public abstract class MiniGamePlugin {
      */
     public Path getDataFolder() {
         return dataFolder;
+    }
+
+    public JavaPlugin getJavaPlugin() {
+        return javaPlugin;
+    }
+
+    public String[] listStages() {
+
+        // List stages from file names
+        //return getStageBuilders().keySet().toArray(new String[0]);
+    }
+
+    public Stage loadStage(String stageName, Location location) {
+        // Load stage from file
+
+        // File structure:
+        // stages/ - Folder
+        //   stageName/ - Folder
+
+        //   stageName.stage - Stage data in protobuf
+        //   stageName/ - Folder
+        //    partName.schematic - Schematic data in protobuf
     }
 
 }
