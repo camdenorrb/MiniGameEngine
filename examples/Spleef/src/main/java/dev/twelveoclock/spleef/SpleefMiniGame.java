@@ -1,11 +1,13 @@
 package dev.twelveoclock.spleef;
 
 import dev.twelveoclock.minigameengine.minigame.MiniGame;
+import dev.twelveoclock.minigameengine.minigame.stage.Stage;
 
 public final class SpleefMiniGame extends MiniGame<SpleefPlugin> {
 
-	public SpleefMiniGame(final SpleefPlugin plugin) {
+	public SpleefMiniGame(final SpleefPlugin plugin, final Stage stage) {
 		super(plugin);
+		stage.getData().markers().get(SpleefMarker.SPAWN);
 	}
 
 

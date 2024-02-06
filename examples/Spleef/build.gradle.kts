@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("dev.twelveoclock:minigame-engine:1.0.3")
+    compileOnly("dev.twelveoclock:minigame-engine:1.0.9")
 }
 
 tasks {
