@@ -2,6 +2,9 @@ plugins {
     `java-library`
     `maven-publish`
     id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("io.papermc.paperweight.userdev") version "1.5.11"
+    id("com.google.protobuf") version "0.9.4"
+
 }
 
 group = "dev.twelveoclock"
@@ -15,14 +18,22 @@ repositories {
         name = "SpigotMC"
     }
 
+    /*
     maven("https://mvn.intellectualsites.com/content/repositories/releases/") {
         name = "FastAsyncWorldEdit"
     }
+    */
+
+    maven("https://repo.papermc.io/repository/maven-public/") {
+        name = "PaperMC"
+    }
+
 }
 
 dependencies {
 
-    compileOnly("org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT")
+    //compileOnly("org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT") // Load NMS
 
     /*
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:1.17-317")
@@ -31,7 +42,12 @@ dependencies {
         isTransitive = false
     }*/
 
+    implementation("com.google.protobuf:protobuf-java:3.25.2")
     implementation("org.jetbrains:annotations:24.0.1")
+    implementation(platform("com.intellectualsites.bom:bom-newest:1.41")) // Ref: https://github.com/IntellectualSites/bom
+
+    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core")
+    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit") { isTransitive = false }
 
     // Jackson
     implementation("com.fasterxml.jackson.core:jackson-core:2.15.2")
@@ -39,6 +55,20 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
     testImplementation("com.github.seeseemelk:MockBukkit-v1.17:1.13.0")
+}
+
+sourceSets {
+    main {
+        proto {
+            srcDir("src/main/proto")
+        }
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.25.2"
+    }
 }
 
 

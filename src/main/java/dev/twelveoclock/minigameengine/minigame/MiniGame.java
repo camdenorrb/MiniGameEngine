@@ -92,11 +92,6 @@ public abstract class MiniGame<T extends MiniGamePlugin> {
     }
 
 
-    public Stage loadStage(final String name) {
-        // Make stageData relative to location
-    }
-
-
     public enum State {
         WAITING_ON_PLAYERS,
         RUNNING,

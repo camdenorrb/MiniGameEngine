@@ -81,6 +81,7 @@ public abstract class MiniGamePlugin {
 
     public Stage loadStage(String stageName, Location location) {
         // Load stage from file
+        Stage
 
         // File structure:
         // stages/ - Folder

@@ -7,8 +7,12 @@ option java_package = "dev.twelveoclock.minigameengine.proto";
 message StageData {
   string name = 1;
   UUID worldUUID = 2;
-  uint64 blockPositionBitMask = 3;
+  repeated MarkerData markers = 3;
+}
 
+message MarkerData {
+  string name = 1;
+  uint64 blockPositionBitMask = 2;
 }
 
 message UUID {
