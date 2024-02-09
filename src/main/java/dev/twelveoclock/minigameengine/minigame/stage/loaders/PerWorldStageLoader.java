@@ -1,25 +1,14 @@
 package dev.twelveoclock.minigameengine.minigame.stage.loaders;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
-import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.function.operation.Operations;
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.session.ClipboardHolder;
+import dev.twelveoclock.minigameengine.minigame.stage.PartData;
 import dev.twelveoclock.minigameengine.minigame.stage.Stage;
 import dev.twelveoclock.minigameengine.minigame.stage.StageData;
 import dev.twelveoclock.minigameengine.minigame.stage.StageLoader;
 import org.bukkit.World;
-import org.bukkit.WorldCreator;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 public final class PerWorldStageLoader implements StageLoader {
 
@@ -32,8 +21,9 @@ public final class PerWorldStageLoader implements StageLoader {
 
 
     @Override
-    public Stage load(final StageData stageData) {
+    public Stage load(final StageData stageData, final List<PartData> partData) {
 
+        /*
         try {
 
             final WorldCreator worldCreator = new WorldCreator("test").generator("VoidGenerator");
@@ -54,14 +44,13 @@ public final class PerWorldStageLoader implements StageLoader {
 
         } catch (final IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
         return null;
     }
 
     @Override
     public void unload(final Stage stage) {
-
         plugin.getServer().unloadWorld(stage.getName(), true); // Need to teleport all players out of the world first
 
     }

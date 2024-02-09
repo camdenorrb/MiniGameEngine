@@ -3,12 +3,15 @@ package dev.twelveoclock.minigameengine.minigame.plugin;
 import dev.twelveoclock.minigameengine.MiniGameEnginePlugin;
 import dev.twelveoclock.minigameengine.config.MiniGamePluginConfig;
 import dev.twelveoclock.minigameengine.minigame.MiniGame;
+import dev.twelveoclock.minigameengine.minigame.marker.Marker;
 import dev.twelveoclock.minigameengine.minigame.stage.Stage;
 import dev.twelveoclock.minigameengine.minigame.stage.StageBuilder;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.nio.file.Path;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 
 public abstract class MiniGamePlugin {
@@ -48,6 +51,9 @@ public abstract class MiniGamePlugin {
     public void disable() {}
 
 
+    public abstract List<? extends Marker> getMarkers();
+
+
     /**
      * @return The instance of the MiniGame engine
      */
@@ -77,11 +83,13 @@ public abstract class MiniGamePlugin {
 
         // List stages from file names
         //return getStageBuilders().keySet().toArray(new String[0]);
+        return null;
+        // TODO: Implement this
     }
 
-    public Stage loadStage(String stageName, Location location) {
+    public Stage loadStage(String stageName) {
         // Load stage from file
-        Stage
+       // Stage
 
         // File structure:
         // stages/ - Folder
@@ -90,6 +98,7 @@ public abstract class MiniGamePlugin {
         //   stageName.stage - Stage data in protobuf
         //   stageName/ - Folder
         //    partName.schematic - Schematic data in protobuf
+        return null;
     }
 
 }

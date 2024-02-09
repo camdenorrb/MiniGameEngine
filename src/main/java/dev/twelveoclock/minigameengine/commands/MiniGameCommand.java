@@ -1,5 +1,6 @@
 package dev.twelveoclock.minigameengine.commands;
 
+import dev.twelveoclock.minigameengine.gui.SetupPartGUI;
 import dev.twelveoclock.minigameengine.minigame.MiniGame;
 import dev.twelveoclock.minigameengine.minigame.plugin.MiniGamePlugin;
 import dev.twelveoclock.minigameengine.module.MiniGamesModule;
@@ -9,16 +10,21 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.List;
 
 public final class MiniGameCommand implements CommandExecutor {
 
+	private final JavaPlugin plugin;
+
 	private final MiniGamesModule miniGamesModule;
 
 
-	public MiniGameCommand(final MiniGamesModule miniGamesModule) {
+	public MiniGameCommand(final JavaPlugin plugin, final MiniGamesModule miniGamesModule) {
+		this.plugin = plugin;
 		this.miniGamesModule = miniGamesModule;
 	}
 
@@ -42,7 +48,9 @@ public final class MiniGameCommand implements CommandExecutor {
 			case "join" -> join(sender, command, label, args);
 			case "list"  -> list(sender, args); // TODO: Open GUI with all MiniGame plugins if arg 0 is "plugins" or "games"
 			case "stop"  -> stop(sender, command, label, args); // TODO: Ask to confirm
+			case "stage" -> stage(sender, command, label, args); // TODO: Open GUI with all stages of a MiniGame, with options to setup
 			case "setup" -> setup(sender, command, label, args); // TODO: Walk through set up of a game stage
+			case "setuppart" -> setupPart(sender, command, label, args); // TODO: Walk through set up of a game part
 			//case "config" -> config(sender, command, label, args); // TODO: GUI with options like auto start
 			//case "setLobby" -> setLobby(sender, command, label, args); // TODO: Lobby where all players are teleported to, can be per game
 			//case "delete" -> delete(sender, command, label, args); // TODO: Delete game
@@ -52,6 +60,64 @@ public final class MiniGameCommand implements CommandExecutor {
 		}
 
 		return true;
+	}
+
+	private void stage(final CommandSender sender, final Command command, final String label, final String[] args) {
+
+		new SetupPartGUI(plugin, miniGamesModule.getPluginLoaderModule().getPlugins().values().stream().findFirst().orElse(null)).show((Player) sender);
+	}
+
+	private void setupPart(final CommandSender sender, final Command command, final String label, final String[] args) {
+
+		// /setupPart <MiniGame> <StageName> <PartName> <SchematicFile>
+		// Might be able to remove stage name
+
+		// TODO:
+		//       Create a new world
+		//       Load the schematic into the world
+		//  	 Teleport to a new world to set up a part
+		// 		 Give inventory of items to place for specified stage (Mainly based off markers)
+		//       Save part to file
+		//       Delete world
+
+		if (args.length < 4) {
+			sendUsage(sender, args, "Invalid arguments.");
+			return;
+		}
+
+		if (!(sender instanceof final Player player)) {
+			sender.sendMessage(ChatColor.RED + "Only players can setup parts.");
+			return;
+		}
+
+		final var minigamePlugin = miniGamesModule.getPluginLoaderModule().getPlugins().get(args[1].toLowerCase());
+		if (minigamePlugin == null) {
+			sender.sendMessage(ChatColor.RED + "Unknown MiniGame: " + args[1]);
+			return;
+		}
+
+		final var stageName = Arrays.stream(minigamePlugin.listStages()).filter(stageNameVal -> stageNameVal.equalsIgnoreCase(args[2]))
+				.findFirst()
+				.orElse(null);
+		if (stageName == null) {
+			sender.sendMessage(ChatColor.RED + "Unknown Stage: " + args[2]);
+			return;
+		}
+
+		final var partName = args[3];
+
+
+
+
+
+
+
+
+
+
+
+
+
 	}
 
 	/**
@@ -224,6 +290,9 @@ public final class MiniGameCommand implements CommandExecutor {
 						break;
 					case "setinstances":
 						builder.append(" setInstances <amount> <plugin>");
+						break;
+					case "setuppart":
+						builder.append(" setupPart <MiniGame> <StageName> <PartName> <SchematicFile>");
 						break;
 				}
 				break;

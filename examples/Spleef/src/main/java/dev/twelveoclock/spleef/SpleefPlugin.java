@@ -5,10 +5,9 @@ import dev.twelveoclock.minigameengine.minigame.plugin.MiniGamePlugin;
 import dev.twelveoclock.minigameengine.minigame.stage.Stage;
 import dev.twelveoclock.minigameengine.minigame.stage.StageBuilder;
 import dev.twelveoclock.spleef.stage.BasicSpleefStage;
+import dev.twelveoclock.spleef.stage.SpleefMarker;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class SpleefPlugin extends MiniGamePlugin {
@@ -19,7 +18,7 @@ public final class SpleefPlugin extends MiniGamePlugin {
 	@Override
 	protected MiniGame<SpleefPlugin> createGame() {
 
-		if (stages.length == 0) {
+		if (this.listStages().length == 0) {
 			throw new IllegalStateException("No stages have been registered for the Spleef mini-game.\n"
 				+ " Please register at least one stage using the registerStage method in the onEnable method of your plugin.");
 		}
@@ -36,7 +35,13 @@ public final class SpleefPlugin extends MiniGamePlugin {
 
 
 	public Stage randomStage() {
-		return stages[random.nextInt(stages.length)];
+		return this.loadStage(this.listStages()[random.nextInt(this.listStages().length)]);
+	}
+
+
+	@Override
+	public List<SpleefMarker> getMarkers() {
+		return Arrays.stream(SpleefMarker.values()).toList();
 	}
 
 }

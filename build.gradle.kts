@@ -3,12 +3,12 @@ plugins {
     `maven-publish`
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.papermc.paperweight.userdev") version "1.5.11"
-    id("com.google.protobuf") version "0.9.4"
+    //id("com.google.protobuf") version "0.9.4"
 
 }
 
 group = "dev.twelveoclock"
-version = "1.0.12"
+version = "1.0.21"
 
 repositories {
 
@@ -42,7 +42,7 @@ dependencies {
         isTransitive = false
     }*/
 
-    implementation("com.google.protobuf:protobuf-java:3.25.2")
+    //implementation("com.google.protobuf:protobuf-java:3.25.2")
     implementation("org.jetbrains:annotations:24.0.1")
     implementation(platform("com.intellectualsites.bom:bom-newest:1.41")) // Ref: https://github.com/IntellectualSites/bom
 
@@ -57,20 +57,22 @@ dependencies {
     testImplementation("com.github.seeseemelk:MockBukkit-v1.17:1.13.0")
 }
 
+/*
 sourceSets {
     main {
         proto {
             srcDir("src/main/proto")
         }
     }
-}
+}*/
 
+/*
 protobuf {
     protoc {
         artifact = "com.google.protobuf:protoc:3.25.2"
     }
 }
-
+*/
 
 tasks {
 

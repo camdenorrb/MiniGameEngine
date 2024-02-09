@@ -15,7 +15,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public final class MiniGamePluginLoaderModule extends PluginModule {
 
@@ -115,9 +118,10 @@ public final class MiniGamePluginLoaderModule extends PluginModule {
 		try {
 
 			final MiniGamePluginConfig miniGameConfig = loadGameConfig(gameClassLoader);
+			final Map<String, Class<?>> classPathToClass = loadClassesFromJar(gamesFolder.resolve(miniGameConfig.name() + ".jar").toString(), gameClassLoader);
 
 			@SuppressWarnings("unchecked")
-			final Class<MiniGamePlugin> gamePluginClass = (Class<MiniGamePlugin>) gameClassLoader.loadClass(miniGameConfig.mainClassPath());
+			final var gamePluginClass = (Class<MiniGamePlugin>) classPathToClass.get(miniGameConfig.mainClassPath());
 
 			if (gamePlugins.containsKey(miniGameConfig.name().toLowerCase())) {
 				throw new RuntimeException("Duplicate game name: " + miniGameConfig.name());
@@ -137,11 +141,10 @@ public final class MiniGamePluginLoaderModule extends PluginModule {
 
 			gamePlugin.load();
 		}
-		catch (final IOException | ClassNotFoundException | InvocationTargetException |
-		             InstantiationException | IllegalAccessException | NoSuchMethodException e) {
-			throw new RuntimeException(e);
-		}
-	}
+		catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 	private void loadStages() {
 
@@ -163,6 +166,26 @@ public final class MiniGamePluginLoaderModule extends PluginModule {
 
 	public Map<String, MiniGamePlugin> getPlugins() {
 		return gamePlugins;
+	}
+
+	private static Map<String, Class<?>> loadClassesFromJar(final String jarFilePath, final ClassLoader classLoader) throws Exception {
+
+		final Map<String, Class<?>> classes = new HashMap<>();
+
+        try (final JarFile jarFile = new JarFile(jarFilePath)) {
+
+			final Iterator<JarEntry> iterator = jarFile.stream().iterator();
+
+			while (iterator.hasNext()) {
+				final JarEntry entry = iterator.next();
+				if (entry.getName().endsWith(".class")) {
+					final String classPath = entry.getName().replaceAll("/", ".").replaceAll("\\.class$", "");
+					classes.put(classPath, Class.forName(classPath, true, classLoader));
+				}
+			}
+		}
+
+		return classes;
 	}
 
 }

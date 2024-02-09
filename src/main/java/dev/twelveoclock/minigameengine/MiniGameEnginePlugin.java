@@ -33,6 +33,7 @@ public final class MiniGameEnginePlugin extends JavaPlugin {
     /**
      * Constructor for MockBukkit
      */
+    @SuppressWarnings("removal")
     public MiniGameEnginePlugin(final JavaPluginLoader loader, final PluginDescriptionFile description, final File dataFolder, final File file) {
         super(loader, description, dataFolder, file);
     }

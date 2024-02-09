@@ -41,7 +41,7 @@ public final class MiniGamesModule extends PluginModule {
 
 		this.pluginLoaderModule = pluginLoaderModule;
 		this.selectorMode = selectorMode;
-		this.minigameCommand = new MiniGameCommand(this);
+		this.minigameCommand = new MiniGameCommand(this.plugin, this);
 
 		try {
 

@@ -38,7 +38,7 @@ public final class SpleefMiniGame extends MiniGame<SpleefPlugin> implements List
 	}
 
 	@Override
-	protected void onPlayerJoin(Player player) {
+	protected void onPlayerJoin(final Player player) {
 		join(player);
 	}
 
@@ -46,6 +46,7 @@ public final class SpleefMiniGame extends MiniGame<SpleefPlugin> implements List
 	@EventHandler
 	public void onPlayerMove(final PlayerMoveEvent event) {
 
+		/*
 		final List<BlockPosition> deathLocs = stage.getData().markers().get(SpleefMarker.DEATH);
 		if (deathLocs == null || deathLocs.isEmpty()) {
 			throw new IllegalStateException("No death point has been set for the Spleef stage.");
@@ -55,7 +56,7 @@ public final class SpleefMiniGame extends MiniGame<SpleefPlugin> implements List
 			if (new BlockPosition(Objects.requireNonNull(event.getTo())).equals(deathLoc)) {
 				death(event.getPlayer());
 			}
-		});
+		});*/
 	}
 
 
@@ -66,6 +67,7 @@ public final class SpleefMiniGame extends MiniGame<SpleefPlugin> implements List
 
 	private void spawn(final Player player) {
 
+		/*
 		final List<BlockPosition> spawn = stage.getData().markers().get(SpleefMarker.SPAWN);
 		if (spawn == null || spawn.isEmpty()) {
 			throw new IllegalStateException("No spawn point has been set for the Spleef stage.");
@@ -74,6 +76,8 @@ public final class SpleefMiniGame extends MiniGame<SpleefPlugin> implements List
 		final World world = plugin.getJavaPlugin().getServer().getWorld(stage.getData().worldUUID());
 		final Location spawnLocation = spawn.get(ThreadLocalRandom.current().nextInt(spawn.size())).toLocation(world);
 		player.teleport(spawnLocation);
+
+		 */
 	}
 
 	private void death(final org.bukkit.entity.Player player) {
