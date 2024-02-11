@@ -154,12 +154,6 @@ public final class MiniGameCommand implements CommandExecutor {
 		final var schematicName = args[4];
 
 		new PartSetup(plugin, miniGamePlugin, player, stageName, partName, schematicName).start();
-
-
-
-
-
-
 	}
 
 	/**
