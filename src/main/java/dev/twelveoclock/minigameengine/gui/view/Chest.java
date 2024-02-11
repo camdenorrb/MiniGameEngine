@@ -7,7 +7,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.function.Function;
 
 public final class Chest implements View {
@@ -69,8 +71,10 @@ public final class Chest implements View {
 		}
 	}
 
-	public <T> void fillWith(final Iterable<T> values, final Function<T, ItemStack> filler) {
+	// Return slot -> value
+	public <T> Map<Integer, T> fillWith(final Iterable<T> values, final Function<T, ItemStack> filler) {
 
+		final Map<Integer, T> slotToValue = new HashMap<>();
 		final Iterator<T> iterator = values.iterator();
 		final int size = inventory.getSize();
 
@@ -80,8 +84,13 @@ public final class Chest implements View {
 				break;
 			}
 
-			inventory.setItem(slot, filler.apply(iterator.next()));
+			final T value = iterator.next();
+
+			inventory.setItem(slot, filler.apply(value));
+			slotToValue.put(slot, value);
 		}
+
+		return slotToValue;
 	}
 
 	public SlicedChest asSlicedChest() {

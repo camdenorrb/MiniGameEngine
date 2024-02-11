@@ -73,8 +73,10 @@ public final class SlicedChest implements View {
 		}
 	}
 
-	public <T> void fillWith(final Iterable<T> values, final Function<T, ItemStack> filler) {
+	// Returns value -> slot
+	public <T> Map<Integer, T> fillWith(final Iterable<T> values, final Function<T, ItemStack> filler) {
 
+		final Map<Integer, T> slotToValue = new HashMap<>();
 		final Iterator<T> iterator = values.iterator();
 
 		for (int slot = 0; slot < this.size; slot++) {
@@ -83,8 +85,14 @@ public final class SlicedChest implements View {
 				break;
 			}
 
-			inventory.setItem(originalSlot(slot), filler.apply(iterator.next()));
+			final T value = iterator.next();
+			final int originSlot = originalSlot(slot);
+
+			inventory.setItem(originSlot, filler.apply(value));
+			slotToValue.put(originSlot, value);
 		}
+
+		return slotToValue;
 	}
 
 	public SlicedChest slice(final String name, final int startX, final int startY, final int width, final int height) {
