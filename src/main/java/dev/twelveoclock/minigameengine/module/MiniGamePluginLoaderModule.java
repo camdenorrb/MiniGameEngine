@@ -8,7 +8,6 @@ import dev.twelveoclock.minigameengine.minigame.plugin.MiniGamePlugin;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;

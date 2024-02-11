@@ -39,10 +39,13 @@ public final class MiniGamesPluginsGUI extends PluginModule implements GUI {
 		final var gameTypesView = new SlicedChest(view.getInventory(), 0, 0, 1, 1);
 
 		gameTypesView.fillWith(miniGamesPluginModule.getPlugins().values(), gamePlugin -> {
+
 			final var gameItem = new ItemStack(Material.CHEST);
 			final var meta = gameItem.getItemMeta();
+
 			meta.setDisplayName(gamePlugin.getConfig().name());
 			gameItem.setItemMeta(meta);
+
 			return gameItem;
 		});
 	}

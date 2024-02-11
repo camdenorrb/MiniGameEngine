@@ -102,4 +102,8 @@ public final class Chest implements View {
 		return row * 9 + col;
 	}
 
+	public boolean isThisInventory(final Inventory inventory) {
+		return this.inventory.equals(inventory);
+	}
+
 }

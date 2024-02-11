@@ -52,6 +52,7 @@ public final class SlicedChest implements View {
 
 	@Override
 	public void show(final Player player) {
+		player.openInventory(inventory);
 	}
 
 
@@ -144,6 +145,10 @@ public final class SlicedChest implements View {
 
 	public Map<String, SlicedChest> getSections() {
 		return sections;
+	}
+
+	public boolean isThisInventory(final Inventory inventory) {
+		return this.inventory.equals(inventory);
 	}
 
 }

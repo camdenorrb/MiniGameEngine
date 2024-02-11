@@ -4,6 +4,7 @@ import dev.twelveoclock.minigameengine.gui.SetupPartGUI;
 import dev.twelveoclock.minigameengine.minigame.MiniGame;
 import dev.twelveoclock.minigameengine.minigame.plugin.MiniGamePlugin;
 import dev.twelveoclock.minigameengine.module.MiniGamesModule;
+import dev.twelveoclock.minigameengine.setup.PartSetup;
 import dev.twelveoclock.minigameengine.utils.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -13,6 +14,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,6 +55,7 @@ public final class MiniGameCommand implements CommandExecutor {
 			case "stage" -> stage(sender, command, label, args); // TODO: Open GUI with all stages of a MiniGame, with options to setup
 			case "setup" -> setup(sender, command, label, args); // TODO: Walk through set up of a game stage
 			case "setuppart" -> setupPart(sender, command, label, args); // TODO: Walk through set up of a game part
+			case "createstage" -> createStage(sender, command, label, args); // TODO: Remove this in favor of `stage` command
 			//case "config" -> config(sender, command, label, args); // TODO: GUI with options like auto start
 			//case "setLobby" -> setLobby(sender, command, label, args); // TODO: Lobby where all players are teleported to, can be per game
 			//case "delete" -> delete(sender, command, label, args); // TODO: Delete game
@@ -62,8 +67,48 @@ public final class MiniGameCommand implements CommandExecutor {
 		return true;
 	}
 
-	private void stage(final CommandSender sender, final Command command, final String label, final String[] args) {
+	private void createStage(final CommandSender sender, final Command command, final String label, final String[] args) {
 
+		// /createStage <MiniGame> <StageName>
+
+		if (args.length < 3) {
+			sendUsage(sender, args, "Invalid arguments. ");
+			return;
+		}
+
+		final var miniGamePlugin = miniGamesModule.getPluginLoaderModule().getPlugins().get(args[1].toLowerCase());
+		if (miniGamePlugin == null) {
+			sender.sendMessage(ChatColor.RED + "Unknown MiniGame: " + args[1]);
+			return;
+		}
+
+		final Path stageFolder = miniGamePlugin.getStageFolder();
+		if (Files.notExists(stageFolder)) {
+			try {
+				Files.createDirectories(stageFolder);
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		final var stageName = args[2];
+		if (Arrays.stream(miniGamePlugin.listStages())
+				.anyMatch(stageNameVal -> stageNameVal.equalsIgnoreCase(stageName))) {
+			sender.sendMessage(ChatColor.RED + "Stage already exists: " + stageName);
+			return;
+		}
+
+
+        try {
+			Files.createFile(stageFolder.resolve(stageName + ".stage"));
+        } catch (final IOException e) {
+			e.printStackTrace();
+        }
+
+		sender.sendMessage(ChatColor.GREEN + "Stage created: " + stageName);
+    }
+
+	private void stage(final CommandSender sender, final Command command, final String label, final String[] args) {
 		new SetupPartGUI(plugin, miniGamesModule.getPluginLoaderModule().getPlugins().values().stream().findFirst().orElse(null)).show((Player) sender);
 	}
 
@@ -80,7 +125,7 @@ public final class MiniGameCommand implements CommandExecutor {
 		//       Save part to file
 		//       Delete world
 
-		if (args.length < 4) {
+		if (args.length < 5) {
 			sendUsage(sender, args, "Invalid arguments.");
 			return;
 		}
@@ -90,13 +135,13 @@ public final class MiniGameCommand implements CommandExecutor {
 			return;
 		}
 
-		final var minigamePlugin = miniGamesModule.getPluginLoaderModule().getPlugins().get(args[1].toLowerCase());
-		if (minigamePlugin == null) {
+		final var miniGamePlugin = miniGamesModule.getPluginLoaderModule().getPlugins().get(args[1].toLowerCase());
+		if (miniGamePlugin == null) {
 			sender.sendMessage(ChatColor.RED + "Unknown MiniGame: " + args[1]);
 			return;
 		}
 
-		final var stageName = Arrays.stream(minigamePlugin.listStages()).filter(stageNameVal -> stageNameVal.equalsIgnoreCase(args[2]))
+		final var stageName = Arrays.stream(miniGamePlugin.listStages()).filter(stageNameVal -> stageNameVal.equalsIgnoreCase(args[2]))
 				.findFirst()
 				.orElse(null);
 		if (stageName == null) {
@@ -106,12 +151,9 @@ public final class MiniGameCommand implements CommandExecutor {
 
 		final var partName = args[3];
 
+		final var schematicName = args[4];
 
-
-
-
-
-
+		new PartSetup(plugin, miniGamePlugin, player, stageName, partName, schematicName).start();
 
 
 

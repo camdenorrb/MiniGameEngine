@@ -9,6 +9,8 @@ import dev.twelveoclock.minigameengine.minigame.stage.StageBuilder;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.List;
@@ -31,6 +33,7 @@ public abstract class MiniGamePlugin {
     // Set by the loader
     //protected Stage[] stages;
     // TODO: Instead we will build a list of stages from file names
+
 
     /**
      * Creates a MiniGame instance based on the plugin
@@ -75,16 +78,28 @@ public abstract class MiniGamePlugin {
         return dataFolder;
     }
 
+    public Path getStageFolder() {
+        return dataFolder.resolve("Stages");
+    }
+
     public JavaPlugin getJavaPlugin() {
         return javaPlugin;
     }
 
     public String[] listStages() {
 
-        // List stages from file names
-        //return getStageBuilders().keySet().toArray(new String[0]);
+        try (final var list = Files.list(getStageFolder())) {
+            return list
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .filter(name -> name.endsWith(".stage"))
+                    .map(name -> name.substring(0, name.length() - 6))
+                    .toArray(String[]::new);
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+
         return null;
-        // TODO: Implement this
     }
 
     public Stage loadStage(String stageName) {
