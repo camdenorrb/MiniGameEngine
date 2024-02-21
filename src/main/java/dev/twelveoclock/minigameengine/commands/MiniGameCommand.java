@@ -88,6 +88,7 @@ public final class MiniGameCommand implements CommandExecutor {
 				Files.createDirectories(stageFolder);
 			} catch (final IOException e) {
 				e.printStackTrace();
+				return;
 			}
 		}
 
@@ -103,13 +104,14 @@ public final class MiniGameCommand implements CommandExecutor {
 			Files.createFile(stageFolder.resolve(stageName + ".stage"));
         } catch (final IOException e) {
 			e.printStackTrace();
-        }
+			return;
+		}
 
 		sender.sendMessage(ChatColor.GREEN + "Stage created: " + stageName);
     }
 
 	private void stage(final CommandSender sender, final Command command, final String label, final String[] args) {
-		new SetupPartGUI(plugin, miniGamesModule.getPluginLoaderModule().getPlugins().values().stream().findFirst().orElse(null)).show((Player) sender);
+		//new SetupPartGUI(plugin, miniGamesModule.getPluginLoaderModule().getPlugins().values().stream().findFirst().orElse(null)).show((Player) sender);
 	}
 
 	private void setupPart(final CommandSender sender, final Command command, final String label, final String[] args) {

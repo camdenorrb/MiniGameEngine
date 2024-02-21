@@ -3,6 +3,8 @@ package dev.twelveoclock.minigameengine.gui;
 import dev.twelveoclock.minigameengine.gui.view.SlicedChest;
 import dev.twelveoclock.minigameengine.minigame.plugin.MiniGamePlugin;
 import dev.twelveoclock.minigameengine.module.PluginModule;
+import dev.twelveoclock.minigameengine.part.Part;
+import dev.twelveoclock.minigameengine.setup.PartSetup;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,7 +21,7 @@ public final class SetupPartGUI extends PluginModule implements GUI {
     private final MiniGamePlugin miniGamePlugin;
 
 
-    public SetupPartGUI(final JavaPlugin plugin, final MiniGamePlugin miniGamePlugin) {
+    public SetupPartGUI(final JavaPlugin plugin, final MiniGamePlugin miniGamePlugin, final PartSetup setup) {
         super(plugin);
         this.view = new SlicedChest(plugin.getServer().createInventory(null, 36, "Setup Part"));
         this.miniGamePlugin = miniGamePlugin;
@@ -37,7 +39,7 @@ public final class SetupPartGUI extends PluginModule implements GUI {
         view.show(player);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(final InventoryClickEvent event) {
         if (view.isThisInventory(event.getClickedInventory()) || (event.isShiftClick() && view.isThisInventory(event.getView().getTopInventory()))) {
             event.getWhoClicked().sendMessage("You clicked on the setup part GUI");
@@ -45,7 +47,7 @@ public final class SetupPartGUI extends PluginModule implements GUI {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onInventoryDrag(final InventoryDragEvent event) {
         if (view.isThisInventory(event.getView().getTopInventory())) {
             if (event.getRawSlots().stream().anyMatch(slot ->
@@ -57,7 +59,7 @@ public final class SetupPartGUI extends PluginModule implements GUI {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onInventoryMoveItem(final InventoryMoveItemEvent event) {
         if (view.isThisInventory(event.getDestination()) || view.isThisInventory(event.getSource())) {
             event.setCancelled(true);

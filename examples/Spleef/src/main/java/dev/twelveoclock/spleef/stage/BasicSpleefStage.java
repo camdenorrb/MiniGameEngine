@@ -17,6 +17,17 @@ public class BasicSpleefStage extends Stage {
 	}
 
 
+	public enum Marker {
+		SPAWN,
+		BLOCK,
+		DEATH
+	}
+
+	public enum Part {
+		ICE,
+		WALL
+	}
+
 	public static class BasicSpleefStageBuilder implements StageBuilder<BasicSpleefStage> {
 
 		@Override

@@ -179,7 +179,7 @@ public final class MiniGamePluginLoaderModule extends PluginModule {
 				final JarEntry entry = iterator.next();
 				if (entry.getName().endsWith(".class")) {
 					final String classPath = entry.getName().replaceAll("/", ".").replaceAll("\\.class$", "");
-					classes.put(classPath, Class.forName(classPath, true, classLoader));
+					classes.put(classPath, Class.forName(classPath, false, classLoader));
 				}
 			}
 		}

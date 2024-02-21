@@ -5,7 +5,6 @@ import dev.twelveoclock.minigameengine.minigame.plugin.MiniGamePlugin;
 import dev.twelveoclock.minigameengine.minigame.stage.Stage;
 import dev.twelveoclock.minigameengine.minigame.stage.StageBuilder;
 import dev.twelveoclock.spleef.stage.BasicSpleefStage;
-import dev.twelveoclock.spleef.stage.SpleefMarker;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -39,6 +38,7 @@ public final class SpleefPlugin extends MiniGamePlugin {
 	}
 
 
+	// TODO: Figure out how to do this when there are so many stages
 	@Override
 	public List<SpleefMarker> getMarkers() {
 		return Arrays.stream(SpleefMarker.values()).toList();
