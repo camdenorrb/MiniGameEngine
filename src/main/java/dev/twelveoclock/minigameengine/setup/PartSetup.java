@@ -316,7 +316,7 @@ public final class PartSetup implements Listener {
         );
 
         // TODO: Undo/Redo - Clock (On right click undo, on left click redo)
-        // TODO: Confirm - Emerald (On right click confirm, on left click cancel)
+        // TODO: Confirm - Emerald (On right click confirm, on left click cancel) (NOTE: Maybe this can be a fallback method)
 
         // Eraser - Sponge (Use with right click to remove markers, flood fill, selections)
         final var eraser = applyMeta(new ItemStack(Material.SPONGE), itemMeta ->
