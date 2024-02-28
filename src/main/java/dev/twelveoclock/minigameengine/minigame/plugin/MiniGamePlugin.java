@@ -1,16 +1,38 @@
 package dev.twelveoclock.minigameengine.minigame.plugin;
 
 import dev.twelveoclock.minigameengine.MiniGameEnginePlugin;
+import dev.twelveoclock.minigameengine.config.MiniGamePluginConfig;
 import dev.twelveoclock.minigameengine.minigame.MiniGame;
+import dev.twelveoclock.minigameengine.minigame.marker.Marker;
+import dev.twelveoclock.minigameengine.minigame.stage.Stage;
+import dev.twelveoclock.minigameengine.minigame.stage.StageBuilder;
+import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public abstract class MiniGamePlugin extends JavaPlugin {
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+
+public abstract class MiniGamePlugin {
 
     // Set by the loader
+    protected MiniGamePluginConfig config;
 
-    protected Data data;
-
+    // Set by the loader
     protected MiniGameEnginePlugin engine;
+
+    // Set by the loader
+    protected JavaPlugin javaPlugin;
+
+    // Set by the loader
+    protected Path dataFolder;
+
+    // Set by the loader
+    //protected Stage[] stages;
+    // TODO: Instead we will build a list of stages from file names
 
 
     /**
@@ -18,8 +40,12 @@ public abstract class MiniGamePlugin extends JavaPlugin {
      *
      * @return The created MiniGame instance
      */
-    public abstract MiniGame createGame();
+    protected abstract MiniGame<?> createGame();
 
+    protected abstract Map<String, StageBuilder<? extends Stage>> getStageBuilders();
+
+
+    // public abstract Class<Marker> getMarkerClass(); // TODO: This will be defined in stage instead, ideally not defined at all
 
     public void load() {}
 
@@ -27,27 +53,9 @@ public abstract class MiniGamePlugin extends JavaPlugin {
 
     public void disable() {}
 
-    @Override
-    public final void onLoad() {
-        load();
-    }
 
-    @Override
-    public final void onEnable() {
-        enable();
-    }
+    public abstract List<? extends Marker> getMarkers();
 
-    @Override
-    public final void onDisable() {
-        disable();
-    }
-
-    /**
-     * @return The data loaded for the MiniGame plugin
-     */
-    public Data getData() {
-        return data;
-    }
 
     /**
      * @return The instance of the MiniGame engine
@@ -56,16 +64,56 @@ public abstract class MiniGamePlugin extends JavaPlugin {
         return engine;
     }
 
+    /**
+     * @return The instance of the config
+     */
+    public MiniGamePluginConfig getConfig() {
+        return config;
+    }
 
     /**
-     * The data stored in `minigame.toml`
-     *
-     * @param name The name of the MiniGame
-     * @param version The version of the MiniGame
+     * @return The instance of the data folder
      */
-    public record Data(
-        String name,
-        String version
-    ) {}
+    public Path getDataFolder() {
+        return dataFolder;
+    }
+
+    public Path getStageFolder() {
+        return dataFolder.resolve("Stages");
+    }
+
+    public JavaPlugin getJavaPlugin() {
+        return javaPlugin;
+    }
+
+    public String[] listStages() {
+
+        try (final var list = Files.list(getStageFolder())) {
+            return list
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .filter(name -> name.endsWith(".stage"))
+                    .map(name -> name.substring(0, name.length() - 6))
+                    .toArray(String[]::new);
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public Stage loadStage(String stageName) {
+        // Load stage from file
+       // Stage
+
+        // File structure:
+        // stages/ - Folder
+        //   stageName/ - Folder
+
+        //   stageName.stage - Stage data in protobuf
+        //   stageName/ - Folder
+        //    partName.schematic - Schematic data in protobuf
+        return null;
+    }
 
 }

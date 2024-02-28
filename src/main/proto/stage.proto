@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package proto;
+
+option java_package = "dev.twelveoclock.minigameengine.proto";
+
+message StageData {
+  string name = 1;
+  UUID worldUUID = 2;
+  repeated MarkerData markers = 3;
+}
+
+message MarkerData {
+  string name = 1;
+  uint64 blockPositionBitMask = 2;
+}
+
+message UUID {
+  uint64 mostSigBits = 1;
+  uint64 leastSigBits = 2;
+}
