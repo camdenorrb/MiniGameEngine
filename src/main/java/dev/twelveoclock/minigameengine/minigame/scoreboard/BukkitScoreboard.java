@@ -59,7 +59,6 @@ public final class BukkitScoreboard {
 		public void setLine(final int index, final String text) {
 
 			final String teamName = ChatColor.values()[index] + "" + ChatColor.RESET;
-
 			final String prefix = text.length() > 16 ? text.substring(0, 16) : text;
 			final String suffix = text.length() > 16 ? ChatColor.getLastColors(prefix) + text.substring(16) : "";
 

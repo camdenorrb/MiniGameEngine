@@ -1,6 +1,7 @@
 package dev.twelveoclock.minigameengine.position;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 
 /**
@@ -39,6 +40,18 @@ public record BlockPosition(Long bitMask) {
 
 
     /**
+     * @param world The world to convert the BlockPosition to a Location in
+     * @return The Location representation of the BlockPosition
+     */
+    public Location toLocation(final World world) {
+        return new Location(world, getX(), getY(), getZ());
+    }
+
+    public BlockPosition add(final int x, final int y, final int z) {
+        return new BlockPosition(getX() + x, getY() + y, getZ() + z);
+    }
+
+    /**
      * @return The calculated x position from the bitmask
      */
     public int getX() {
@@ -56,6 +69,23 @@ public record BlockPosition(Long bitMask) {
      * @return The calculated z position from the bitmask
      */
     public int getZ() {
+        return (int) (bitMask << 26 >> 38);
+    }
+
+
+    public static long getAsBitMask(final int x, final int y, final int z) {
+        return ((((long) x & 0x3FFFFFF) << 38) | (((long) z & 0x3FFFFFF) << 12) | ((long) y & 0xFFF));
+    }
+
+    public static int getX(final long bitMask) {
+        return (int) (bitMask >> 38);
+    }
+
+    public static int getY(final long bitMask) {
+        return (int) (bitMask & 0xFFF);
+    }
+
+    public static int getZ(final long bitMask) {
         return (int) (bitMask << 26 >> 38);
     }
 

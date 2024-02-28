@@ -20,27 +20,29 @@ public final class MobTeamNPC<T extends LivingEntity> implements TeamNPC {
 	private final Armor armor;
 
 
-	public MobTeamNPC(final String displayName,
-	                  final Team team,
-	                  final Class<T> entityType,
-	                  final Consumer<T> onSpawn) {
+	public MobTeamNPC(
+		final String displayName,
+		final Team team,
+		final Class<T> entityType,
+		final Consumer<T> onSpawn
+	) {
 		this(displayName, team, entityType, onSpawn, null);
 	}
 
 
-	public MobTeamNPC(final String displayName,
-	                  final Team team,
-	                  final Class<T> entityType,
-	                  final Consumer<T> onSpawn,
-	                  final Armor armor) {
+	public MobTeamNPC(
+		final String displayName,
+		final Team team,
+		final Class<T> entityType,
+		final Consumer<T> onSpawn,
+		final Armor armor
+	) {
 		this.displayName = displayName;
 		this.team = team;
 		this.entityType = entityType;
 		this.onSpawn = onSpawn;
 		this.armor = armor;
 	}
-
-
 
 
 	@Override

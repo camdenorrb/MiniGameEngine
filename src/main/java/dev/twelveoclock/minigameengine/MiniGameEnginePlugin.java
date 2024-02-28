@@ -2,7 +2,8 @@ package dev.twelveoclock.minigameengine;
 
 import com.fasterxml.jackson.dataformat.toml.TomlMapper;
 import dev.twelveoclock.minigameengine.config.PluginConfig;
-import dev.twelveoclock.minigameengine.minigame.modules.MiniGamesModule;
+import dev.twelveoclock.minigameengine.module.MiniGamesModule;
+import dev.twelveoclock.minigameengine.module.PlaceholderModule;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
@@ -19,6 +20,8 @@ public final class MiniGameEnginePlugin extends JavaPlugin {
 
     private MiniGamesModule miniGamesModule;
 
+    private final PlaceholderModule placeholderModule = new PlaceholderModule(this);
+
 
     /**
      * Constructor for MockBukkit
@@ -30,6 +33,7 @@ public final class MiniGameEnginePlugin extends JavaPlugin {
     /**
      * Constructor for MockBukkit
      */
+    @SuppressWarnings("removal")
     public MiniGameEnginePlugin(final JavaPluginLoader loader, final PluginDescriptionFile description, final File dataFolder, final File file) {
         super(loader, description, dataFolder, file);
     }
@@ -38,17 +42,19 @@ public final class MiniGameEnginePlugin extends JavaPlugin {
     @Override
     public void onLoad() {
         loadConfig();
-        miniGamesModule = new MiniGamesModule(this, pluginConfig);
+        miniGamesModule = new MiniGamesModule(this, MiniGamesModule.SelectionMode.RANDOM); // TODO: Get selection mode from config
     }
 
     @Override
     public void onEnable() {
         miniGamesModule.enable();
+        placeholderModule.enable();
     }
 
     @Override
     public void onDisable() {
         miniGamesModule.disable();
+        placeholderModule.disable();
     }
 
 
