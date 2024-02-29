@@ -45,7 +45,7 @@ dependencies {
 
     //implementation("com.google.protobuf:protobuf-java:3.25.2")
     implementation("org.jetbrains:annotations:24.1.0")
-    implementation(platform("com.intellectualsites.bom:bom-newest:1.41")) // Ref: https://github.com/IntellectualSites/bom
+    implementation(platform("com.intellectualsites.bom:bom-newest:1.42")) // Ref: https://github.com/IntellectualSites/bom
 
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core")
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit") { isTransitive = false }
