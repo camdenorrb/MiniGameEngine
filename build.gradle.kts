@@ -44,17 +44,17 @@ dependencies {
     }*/
 
     //implementation("com.google.protobuf:protobuf-java:3.25.2")
-    implementation("org.jetbrains:annotations:24.0.1")
-    implementation(platform("com.intellectualsites.bom:bom-newest:1.41")) // Ref: https://github.com/IntellectualSites/bom
+    implementation("org.jetbrains:annotations:24.1.0")
+    implementation(platform("com.intellectualsites.bom:bom-newest:1.42")) // Ref: https://github.com/IntellectualSites/bom
 
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core")
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit") { isTransitive = false }
 
     // Jackson
-    implementation("com.fasterxml.jackson.core:jackson-core:2.15.2")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.15.2")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.16.1")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.16.1")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
     testImplementation("com.github.seeseemelk:MockBukkit-v1.17:1.13.0")
 }
 
