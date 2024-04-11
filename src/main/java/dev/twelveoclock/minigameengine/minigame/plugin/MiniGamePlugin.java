@@ -42,7 +42,7 @@ public abstract class MiniGamePlugin {
      */
     protected abstract MiniGame<?> createGame();
 
-    protected abstract Map<String, StageBuilder<? extends Stage>> getStageBuilders();
+    public abstract Map<String, StageBuilder<? extends Stage>> getStageBuilders();
 
 
     // public abstract Class<Marker> getMarkerClass(); // TODO: This will be defined in stage instead, ideally not defined at all
@@ -52,9 +52,6 @@ public abstract class MiniGamePlugin {
     public void enable() {}
 
     public void disable() {}
-
-
-    public abstract List<? extends Marker> getMarkers();
 
 
     /**

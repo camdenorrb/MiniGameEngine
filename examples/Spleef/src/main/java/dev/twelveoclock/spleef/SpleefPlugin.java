@@ -26,9 +26,9 @@ public final class SpleefPlugin extends MiniGamePlugin {
 	}
 
 	@Override
-	protected Map<String, StageBuilder<? extends Stage>> getStageBuilders() {
+	public Map<String, StageBuilder<? extends Stage>> getStageBuilders() {
 		return new HashMap<>(){{
-			put("basic", new BasicSpleefStage.BasicSpleefStageBuilder());
+			put("basic", new BasicSpleefStage.Builder());
 		}};
 	}
 
@@ -39,9 +39,6 @@ public final class SpleefPlugin extends MiniGamePlugin {
 
 
 	// TODO: Figure out how to do this when there are so many stages
-	@Override
-	public List<SpleefMarker> getMarkers() {
-		return Arrays.stream(SpleefMarker.values()).toList();
-	}
+
 
 }

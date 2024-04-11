@@ -1,6 +1,5 @@
 package dev.twelveoclock.minigameengine.commands;
 
-import dev.twelveoclock.minigameengine.gui.SetupPartGUI;
 import dev.twelveoclock.minigameengine.minigame.MiniGame;
 import dev.twelveoclock.minigameengine.minigame.plugin.MiniGamePlugin;
 import dev.twelveoclock.minigameengine.module.MiniGamesModule;
@@ -116,7 +115,7 @@ public final class MiniGameCommand implements CommandExecutor {
 
 	private void setupPart(final CommandSender sender, final Command command, final String label, final String[] args) {
 
-		// /setupPart <MiniGame> <StageName> <PartName> <SchematicFile>
+		// /setupPart <MiniGame> <StageName> <StageBuilder> <PartName> <SchematicFile>
 		// Might be able to remove stage name
 
 		// TODO:
@@ -127,7 +126,7 @@ public final class MiniGameCommand implements CommandExecutor {
 		//       Save part to file
 		//       Delete world
 
-		if (args.length < 5) {
+		if (args.length < 6) {
 			sendUsage(sender, args, "Invalid arguments.");
 			return;
 		}
@@ -151,11 +150,17 @@ public final class MiniGameCommand implements CommandExecutor {
 			return;
 		}
 
-		final var partName = args[3];
+		final var stageBuilder = miniGamePlugin.getStageBuilders().get(args[3].toLowerCase());
+		if (stageBuilder == null) {
+			sender.sendMessage(ChatColor.RED + "Unknown StageBuilder: " + args[3]);
+			return;
+		}
 
-		final var schematicName = args[4];
+		final var partName = args[4];
 
-		new PartSetup(plugin, miniGamePlugin, player, stageName, partName, schematicName).start();
+		final var schematicName = args[5];
+
+		new PartSetup(plugin, miniGamePlugin, player, stageName, stageBuilder, partName, schematicName).start();
 	}
 
 	/**

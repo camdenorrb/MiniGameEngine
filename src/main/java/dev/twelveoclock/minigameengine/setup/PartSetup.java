@@ -1,5 +1,7 @@
 package dev.twelveoclock.minigameengine.setup;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
@@ -11,14 +13,18 @@ import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import dev.twelveoclock.minigameengine.generator.VoidGenerator;
+import dev.twelveoclock.minigameengine.gui.SetupPartGUI;
 import dev.twelveoclock.minigameengine.minigame.marker.Marker;
 import dev.twelveoclock.minigameengine.minigame.plugin.MiniGamePlugin;
+import dev.twelveoclock.minigameengine.minigame.stage.PartData;
+import dev.twelveoclock.minigameengine.minigame.stage.Stage;
+import dev.twelveoclock.minigameengine.minigame.stage.StageBuilder;
 import dev.twelveoclock.minigameengine.position.BlockPosition;
 import net.kyori.adventure.text.Component;
+import net.minecraft.core.BlockPos;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -35,10 +41,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 // TODO: Have one item for selection which swaps between modes (single, cuboid, floodfill)
 
@@ -52,9 +60,14 @@ public final class PartSetup implements Listener {
 
     private final String stageName, partName, schematicName;
 
+    private final StageBuilder<? extends Stage> stageBuilder;
+
     private boolean started = false;
-    
-    private final Map<Marker, List<BlockPosition>> markers = new HashMap<>();
+
+    private final Map<Marker, Set<BlockPosition>> markers = new HashMap<>();
+
+    // Markers being placed in this session
+    private final Map<BlockPosition, MarkerChange> pendingChanges = new HashMap<>();
 
     private final SelectionWand selectionWand = new SelectionWand();
 
@@ -64,7 +77,21 @@ public final class PartSetup implements Listener {
 
     private Marker marker;
 
-    private Material markerMaterial;
+    private static final Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
+
+    private static BlockFace[] floodFillDirections = new BlockFace[] {
+        BlockFace.UP,
+        BlockFace.DOWN,
+        BlockFace.NORTH,
+        BlockFace.EAST,
+        BlockFace.SOUTH,
+        BlockFace.WEST,
+        BlockFace.NORTH_WEST,
+        BlockFace.NORTH_EAST,
+        BlockFace.SOUTH_EAST,
+        BlockFace.SOUTH_WEST,
+        //new BlockFace(BlockFace.UP, BlockFace.NORTH), // TODO: Make my own enum for this
+    };
 
 
     // Material to represent markers
@@ -101,12 +128,14 @@ public final class PartSetup implements Listener {
                      @NotNull final MiniGamePlugin miniGamePlugin,
                      @NotNull final Player player,
                      @NotNull final String stageName,
+                     @NotNull final StageBuilder<? extends Stage> stageBuilder,
                      @NotNull final String partName,
                      @NotNull final String schematicName) {
         this.plugin = plugin;
         this.player = player;
         this.miniGamePlugin = miniGamePlugin;
         this.stageName = stageName;
+        this.stageBuilder = stageBuilder;
         this.partName = partName;
         this.schematicName = schematicName;
     }
@@ -139,8 +168,8 @@ public final class PartSetup implements Listener {
         }
 
         final var world = new WorldCreator(stageName + "-" + partName)
-                .generator(new VoidGenerator())
-                .createWorld();
+            .generator(new VoidGenerator())
+            .createWorld();
         if (world == null) {
             throw new IllegalStateException("World could not be created.");
         }
@@ -168,7 +197,6 @@ public final class PartSetup implements Listener {
         //Bukkit.broadcastMessage("Origin: " + clipboard.getOrigin().toString() + " Dimensions: " + clipboard.getDimensions().toString());
         //Bukkit.broadcastMessage("Width: " + clipboard.getWidth() + " Length: " + clipboard.getLength() + " Height: " + clipboard.getHeight());
 
-
         // Set spawn to where it was copied
         final var spawn = clipboard.getRegion().getCenter().subtract(clipboard.getOrigin().toVector3()).add(pasteLocation.toVector3()).add(0.5, clipboard.getHeight(), 0.5);
 
@@ -176,6 +204,12 @@ public final class PartSetup implements Listener {
         player.teleportAsync(new Location(world, spawn.getX(), spawn.getBlockY(), spawn.getZ()));
 
         giveItems();
+
+        // Combine markers with pending markers
+
+        // Start blinker with marker
+        blinker = new SelectionBlinker(player);
+        blinker.start();
     }
 
     public void stop() {
@@ -299,48 +333,57 @@ public final class PartSetup implements Listener {
 
         this.player.getInventory().clear();
 
-
         // Changes based on type of marker
-        final var marker = applyMeta(new ItemStack(Material.STONE), itemMeta ->
-            itemMeta.setDisplayName("Marker")
+        final var markerItem = applyMeta(new ItemStack(Material.STONE), itemMeta -> {
+                itemMeta.setDisplayName("Marker");
+            }
         );
 
         // WorldEdit Wand - Diamond Pickaxe
-        final var wand = applyMeta(new ItemStack(Material.DIAMOND_AXE), itemMeta ->
-            itemMeta.setDisplayName("Selection Wand")
+        final var wandItem = applyMeta(new ItemStack(Material.DIAMOND_AXE), itemMeta -> {
+                itemMeta.setDisplayName("Selection Wand");
+                itemMeta.setLore(List.of(
+                    "Use left and right click to select a marker region",
+                    "Mode: " + selectionWand.mode.name()
+                ));
+            }
         );
 
         // Flood fill marker - Bucket (On right click set, on left click remove, on shift right change type)
-        final var floodFillMarker = applyMeta(new ItemStack(Material.BUCKET), itemMeta ->
-            itemMeta.setDisplayName("Flood Fill Marker")
+        final var floodFillMarkerItem = applyMeta(new ItemStack(Material.BUCKET), itemMeta -> {
+                itemMeta.setDisplayName("Flood Fill Marker");
+                itemMeta.setLore(List.of("Left click to remove", "Right click to set"));
+            }
         );
 
         // TODO: Undo/Redo - Clock (On right click undo, on left click redo)
         // TODO: Confirm - Emerald (On right click confirm, on left click cancel) (NOTE: Maybe this can be a fallback method)
 
         // Eraser - Sponge (Use with right click to remove markers, flood fill, selections)
-        final var eraser = applyMeta(new ItemStack(Material.SPONGE), itemMeta ->
-            itemMeta.setDisplayName("Eraser")
+        final var eraserItem = applyMeta(new ItemStack(Material.SPONGE), itemMeta -> {
+                itemMeta.setDisplayName("Eraser");
+                itemMeta.setLore(List.of("Mode: " + eraser.mode.name()));
+            }
         );
 
         // Options - Compass (On right click)
-        final var options = applyMeta(new ItemStack(Material.COMPASS), itemMeta ->
+        final var optionsItem = applyMeta(new ItemStack(Material.COMPASS), itemMeta ->
             itemMeta.setDisplayName("Options")
         );
 
         // Save and exit - Bed
-        final var saveAndExit = applyMeta(new ItemStack(Material.RED_BED), itemMeta ->
+        final var saveAndExitItem = applyMeta(new ItemStack(Material.RED_BED), itemMeta ->
             itemMeta.setDisplayName("Save and Exit")
         );
 
         final var inventory = this.player.getInventory();
 
-        inventory.setItem(0, marker);
-        inventory.setItem(1, wand);
-        inventory.setItem(2, floodFillMarker);
-        inventory.setItem(3, eraser);
-        inventory.setItem(7, options);
-        inventory.setItem(8, saveAndExit);
+        inventory.setItem(0, markerItem);
+        inventory.setItem(1, wandItem);
+        inventory.setItem(2, floodFillMarkerItem);
+        inventory.setItem(3, eraserItem);
+        inventory.setItem(7, optionsItem);
+        inventory.setItem(8, saveAndExitItem);
     }
 
     private ItemStack applyMeta(final ItemStack item, final Consumer<ItemMeta> itemMetaConsumer) {
@@ -381,24 +424,19 @@ public final class PartSetup implements Listener {
                 Math.max(selection.pos1.getZ(), selection.pos2.getZ())
             );
 
-            final List<Long> positions = new ArrayList<>();
+            final List<BlockPosition> positions = new ArrayList<>();
 
             for (int x = min.getX(); x <= max.getX(); x++) {
                 for (int y = min.getY(); y <= max.getY(); y++) {
                     for (int z = min.getZ(); z <= max.getZ(); z++) {
-                        positions.add(BlockPosition.getAsBitMask(x, y, z));
+                        positions.add(new BlockPosition(x, y, z));
                     }
                 }
             }
 
-            final var randomMaterial = markerMaterials.get(ThreadLocalRandom.current().nextInt(markerMaterials.size()));
-
-            if (blinker != null) {
-                blinker.stop();
+            for (final var position : positions) {
+                pendingChanges.put(position, new MarkerChange(marker, position, MarkerChange.Type.ADD));
             }
-
-            blinker = new SelectionBlinker(player, positions.toArray(new Long[0]), randomMaterial);
-            blinker.start(20L * 5L);
         }
 
 
@@ -412,19 +450,15 @@ public final class PartSetup implements Listener {
         final Player player = event.getPlayer();
         final Action action = event.getAction();
 
-        // Assuming a RIGHT_CLICK_AIR or RIGHT_CLICK_BLOCK is for placing a marker
-	    // Assuming a LEFT_CLICK_AIR or LEFT_CLICK_BLOCK is for removing a marker
-	    if (action.equals(Action.RIGHT_CLICK_BLOCK)) {
-
-		    //placeMarker(player);
-	    } else if (action.equals(Action.LEFT_CLICK_BLOCK)) {
-            //removeMarker(player);
-	    }
+        // Change marker type
+        if (action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK)) {
+            new SetupPartGUI(plugin, miniGamePlugin, this, stageBuilder).show(player);
+        }
     }
 
-    private Long[] floodFill(final Block start) {
+    private Set<BlockPosition> floodFill(final Block start) {
 
-        final Set<Long> visitedPositions = new HashSet<>();
+        final Set<BlockPosition> visitedPositions = new HashSet<>();
 
         final Material targetMaterial = start.getType(); // The type of block we're filling
 
@@ -432,9 +466,10 @@ public final class PartSetup implements Listener {
         blocksQueue.add(start);
 
         while (!blocksQueue.isEmpty()) {
+
             final Block block = blocksQueue.poll();
 
-            final long position = BlockPosition.getAsBitMask(block.getX(), block.getY(), block.getZ());
+            final var position = new BlockPosition(block.getX(), block.getY(), block.getZ());
             if (visitedPositions.contains(position)) {
                 continue;
             }
@@ -442,7 +477,7 @@ public final class PartSetup implements Listener {
             visitedPositions.add(position);
 
             // Add neighboring blocks to queue
-            for (final BlockFace face : BlockFace.values()) {
+            for (final BlockFace face : floodFillDirections) {
                 final Block relative = block.getRelative(face);
                 if (relative.getType() == targetMaterial) {
                     blocksQueue.add(relative);
@@ -450,7 +485,7 @@ public final class PartSetup implements Listener {
             }
         }
 
-        return visitedPositions.toArray(new Long[0]);
+        return visitedPositions;
     }
 
     private void handleFloodFillMarkerClick(final PlayerInteractEvent event) {
@@ -459,32 +494,32 @@ public final class PartSetup implements Listener {
 
         player.sendMessage(ChatColor.GREEN + "Flood fill completed.");
 
-        if (blinker != null) {
-            blinker.stop();
+        // TODO: Have a constant blinker for marker in inventory
+        // TODO: Store into memory the positions of the flood fill
+
+        for (final var position : floodFilled) {
+            pendingChanges.put(position, new MarkerChange(marker, position, MarkerChange.Type.ADD));
         }
 
-        blinker = new SelectionBlinker(player, floodFilled, Material.LIME_CONCRETE);
-        blinker.start(20L * 5L);
+        //blinker = new SelectionBlinker(player, floodFilled, marker.getDisplay());
+        //blinker.start(20L * 5L);
     }
 
     private void handleEraserClick(final PlayerInteractEvent event) {
-
-        if (blinker != null) {
-            blinker.stop();
-        }
 
         final var clickedBlock = event.getClickedBlock();
         player.sendMessage(ChatColor.GREEN + "Eraser used." + (clickedBlock != null ? " Block: " + clickedBlock.getType() : ""));
 
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
             // Remove marker
-            blinker = new SelectionBlinker(player, new Long[]{BlockPosition.getAsBitMask(clickedBlock.getX(), clickedBlock.getY(), clickedBlock.getZ())}, Material.RED_CONCRETE);
+            final var blockPosition = new BlockPosition(clickedBlock);
+            pendingChanges.put(blockPosition, new MarkerChange(marker, blockPosition, MarkerChange.Type.REMOVE));
         } else if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
             // Flood fill remove
-            blinker = new SelectionBlinker(player, floodFill(clickedBlock), Material.RED_CONCRETE);
+            floodFill(clickedBlock).forEach(position -> {
+                pendingChanges.put(position, new MarkerChange(marker, position, MarkerChange.Type.REMOVE));
+            });
         }
-
-        blinker.start(20L * 5L);
 
         // This function could reset areas, remove markers, or revert selections based on where the player is pointing.
     }
@@ -496,14 +531,29 @@ public final class PartSetup implements Listener {
     }
 
     private void handleSaveAndExitClick(final PlayerInteractEvent event) {
+
         // Placeholder functionality: send a message to the player
         player.sendMessage(ChatColor.GREEN + "Saving your work and exiting.");
-        // Copy schematic
-        // Save markers
+
+        final PartData partData = new PartData(partName, markers, Path.of(schematicName));
+
+        final var partFile = plugin.getDataFolder().toPath().resolve("Parts").resolve(partName + ".json");
+        try {
+            Files.writeString(partFile, gson.toJson(partData));
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+
         // Logic to save changes made during the edit session and possibly unload the world or teleport the player out.
     }
 
 
+    public void setMarkerType(final Marker marker) {
+        this.marker = marker;
+        this.player.getInventory().setItem(0, applyMeta(new ItemStack(marker.getDisplay()), itemMeta -> {
+            itemMeta.setDisplayName("Marker");
+        }));
+    }
 
     interface ModeSwappable {
         void nextMode();
@@ -583,28 +633,21 @@ public final class PartSetup implements Listener {
         }
     }
 
-    // TODO: Take in array for positions
-    class SelectionBlinker {
+    final class SelectionBlinker {
 
         private final Player player;
 
-        private final BlockData markerMaterial;
+        private BlockPosition[] positions;
 
-        private final AtomicBoolean showBarrier = new AtomicBoolean();
-
-        private final Long[] positions;
-
-        private BukkitTask task, stopTask;
+        private BukkitTask task;
 
         private boolean isRunning;
 
-        public SelectionBlinker(final Player player, final Long[] positions, final Material markerMaterial) {
+        public SelectionBlinker(final Player player) {
             this.player = player;
-            this.positions = positions;
-            this.markerMaterial = markerMaterial.createBlockData();
         }
 
-        public void start(final Long duration) {
+        public void start() {
 
             if (isRunning) {
                 throw new IllegalStateException("Blinker is already running.");
@@ -612,21 +655,30 @@ public final class PartSetup implements Listener {
 
             isRunning = true;
 
+            final AtomicBoolean showMarker = new AtomicBoolean();
+
             this.task = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+
+                // Join markers and pending markers
+
+                positions = Stream.concat(markers.get(marker).stream(), pendingChanges.values().stream().map(change -> change.position))
+                    .distinct()
+                    .toArray(BlockPosition[]::new);
+
                 for (final var position : positions) {
-                    final var blockLocation = new Location(player.getWorld(), BlockPosition.getX(position), BlockPosition.getY(position), BlockPosition.getZ(position));
+
+                    final var blockLocation = new Location(player.getWorld(), position.getX(), position.getY(), position.getZ());
                     final var block = blockLocation.getBlock();
-                    if (showBarrier.get()) {
+
+                    if (showMarker.get()) {
                         player.sendBlockChange(blockLocation, block.getBlockData());
                     } else {
-                        player.sendBlockChange(blockLocation, markerMaterial);
+                        player.sendBlockChange(blockLocation, marker.getDisplay().createBlockData());
                     }
                 }
 
-                showBarrier.set(!showBarrier.get());
+                showMarker.set(!showMarker.get());
             }, 0, 20);
-
-            stopTask = Bukkit.getScheduler().runTaskLater(plugin, this::stop, duration);
         }
 
         public void stop() {
@@ -635,22 +687,42 @@ public final class PartSetup implements Listener {
                 task.cancel();
             }
 
-            if (stopTask != null) {
-                stopTask.cancel();
-            }
-
             if (isRunning) {
                 isRunning = false;
+
                 for (final var position : positions) {
-                    final var blockLocation = new Location(player.getWorld(), BlockPosition.getX(position), BlockPosition.getY(position), BlockPosition.getZ(position));
+                    final var blockLocation = new Location(player.getWorld(), position.getX(), position.getY(), position.getZ());
                     final var block = blockLocation.getBlock();
                     player.sendBlockChange(blockLocation, block.getBlockData());
                 }
             }
         }
 
-        public Long[] getPositions() {
+        public BlockPosition[] getPositions() {
             return positions;
+        }
+
+    }
+
+    private static class MarkerChange {
+
+        private final Marker marker;
+
+        private final BlockPosition position;
+
+        private final Type type;
+
+
+        public MarkerChange(final Marker marker, final BlockPosition position, final Type type) {
+            this.marker = marker;
+            this.position = position;
+            this.type = type;
+        }
+
+
+        enum Type {
+            ADD,
+            REMOVE,
         }
 
     }

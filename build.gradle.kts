@@ -1,14 +1,14 @@
 plugins {
     `java-library`
     `maven-publish`
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("io.github.goooler.shadow") version "8.1.7"
     id("io.papermc.paperweight.userdev") version "1.5.11"
     //id("com.google.protobuf") version "0.9.4"
 
 }
 
 group = "dev.twelveoclock"
-version = "1.0.21"
+version = "1.0.23"
 
 repositories {
 

@@ -9,7 +9,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public record PartData(Map<Marker, Set<BlockPosition>> markers, Path schematic) {
+public record PartData(
+    String name,
+    Map<Marker, Set<BlockPosition>> markers,
+    Path schematic
+) {
 
 
     /**
@@ -25,7 +29,6 @@ public record PartData(Map<Marker, Set<BlockPosition>> markers, Path schematic) 
      * @param deltaZ The amount to shift the marker positions along the z-axis.
      * @return A new map containing the markers associated with their shifted positions.
      */
-
     public Map<Marker, Set<BlockPosition>> getMarkersShifted(final int deltaX, final int deltaY, final int deltaZ) {
 
         final Map<Marker, Set<BlockPosition>> newMarkers = new HashMap<>(markers.size());

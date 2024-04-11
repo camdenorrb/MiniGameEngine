@@ -1,6 +1,10 @@
 package dev.twelveoclock.minigameengine.minigame.stage;
 
 import dev.twelveoclock.minigameengine.conversation.PlayerConversation;
+import dev.twelveoclock.minigameengine.minigame.marker.Marker;
+import dev.twelveoclock.minigameengine.part.Part;
+
+import java.util.List;
 
 /**
  * Used to build the stage from a player conversation
@@ -16,5 +20,9 @@ public interface StageBuilder<S> {
      * @return The built Stage
      */
     S build(final PlayerConversation conversation);
+
+    List<? extends Marker> getMarkers();
+
+    List<? extends Part> getParts();
 
 }

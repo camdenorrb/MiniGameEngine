@@ -2,8 +2,8 @@ package dev.twelveoclock.minigameengine.gui;
 
 import dev.twelveoclock.minigameengine.gui.view.SlicedChest;
 import dev.twelveoclock.minigameengine.minigame.plugin.MiniGamePlugin;
+import dev.twelveoclock.minigameengine.minigame.stage.StageBuilder;
 import dev.twelveoclock.minigameengine.module.PluginModule;
-import dev.twelveoclock.minigameengine.part.Part;
 import dev.twelveoclock.minigameengine.setup.PartSetup;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -20,11 +20,17 @@ public final class SetupPartGUI extends PluginModule implements GUI {
 
     private final MiniGamePlugin miniGamePlugin;
 
+    private final StageBuilder<?> stageBuilder;
 
-    public SetupPartGUI(final JavaPlugin plugin, final MiniGamePlugin miniGamePlugin, final PartSetup setup) {
+    private final PartSetup setup;
+
+
+    public SetupPartGUI(final JavaPlugin plugin, final MiniGamePlugin miniGamePlugin, final PartSetup setup, final StageBuilder<?> stageBuilder) {
         super(plugin);
         this.view = new SlicedChest(plugin.getServer().createInventory(null, 36, "Setup Part"));
         this.miniGamePlugin = miniGamePlugin;
+        this.setup = setup;
+        this.stageBuilder = stageBuilder;
     }
 
 
@@ -43,6 +49,12 @@ public final class SetupPartGUI extends PluginModule implements GUI {
     public void onInventoryClick(final InventoryClickEvent event) {
         if (view.isThisInventory(event.getClickedInventory()) || (event.isShiftClick() && view.isThisInventory(event.getView().getTopInventory()))) {
             event.getWhoClicked().sendMessage("You clicked on the setup part GUI");
+            final var marker = stageBuilder.getMarkers().get(event.getSlot());
+            if (marker != null) {
+                event.getWhoClicked().sendMessage("You clicked on a marker " + marker);
+                this.setup.setMarkerType(marker);
+                event.getWhoClicked().closeInventory();
+            }
             event.setCancelled(true);
         }
     }
@@ -71,9 +83,9 @@ public final class SetupPartGUI extends PluginModule implements GUI {
 
         final var gameTypesView = new SlicedChest(view.getInventory(), 0, 0, 9, 4);
 
-        gameTypesView.fillWith(miniGamePlugin.getMarkers(), marker -> {
+        gameTypesView.fillWith(stageBuilder.getMarkers(), marker -> {
 
-            final var gameItem = new ItemStack(Material.ARMOR_STAND);
+            final var gameItem = new ItemStack(marker.getDisplay());
             final var meta = gameItem.getItemMeta();
 
             meta.setDisplayName(marker.toString());
