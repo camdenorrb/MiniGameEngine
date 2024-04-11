@@ -52,7 +52,7 @@ dependencies {
 
     // Jackson
     implementation("com.fasterxml.jackson.core:jackson-core:2.17.0")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.16.1")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.17.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
     testImplementation("com.github.seeseemelk:MockBukkit-v1.17:1.13.0")
