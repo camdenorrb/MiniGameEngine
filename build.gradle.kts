@@ -34,7 +34,7 @@ dependencies {
 
     //compileOnly("org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT")
     paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT") // Load NMS
-    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
 
     /*
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:1.17-317")
